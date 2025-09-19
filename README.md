@@ -3,6 +3,9 @@
 Howard is a self-contained, foundational primitive for building truly relational data systems. It is a computable truth engine that provides the logical backbone for making data meaningful.
 Howard is named after William Alvin Howard (1926-2014), the American mathematician and logician who helped formalize the correspondence between logic and computing. This profound insight, published in his 1969 paper, "The Formulae-as-Types Notion of Construction," became a cornerstone of modern computer science.
 
+## TL;DR
+Want to jump straight into building with Howard? Skip the theory and head directly to our **[Getting Started Guide](docs/getting-started.md)** for practical examples and hands-on usage.
+
 ## The Correspondence
 The Curry-Howard correspondence is the deep, elegant idea that programs are proofs, and types are propositions. It establishes a direct and structural connection between formal systems of logic and computational calculi. As a modern summary puts it:
 
@@ -31,3 +34,11 @@ As Philip Greenspun famously observed,
 > "Any sufficiently complicated C or Fortran program contains an ad hoc, informally-specified, bug-ridden, slow implementation of half of Common Lisp."
 
 Howard is our definitive and elegant solution. It is the engine that transforms simple data into a rich fabric of meaningful, composable knowledge. It's our promise to you: a more connected, intelligent, and sane digital world.
+
+## Documentation
+
+Explore Howard's capabilities through our comprehensive documentation:
+
+- **[Getting Started](docs/getting-started.md)** - Learn the core concepts and API through practical examples
+- **[Proofs](docs/proofs.md)** - Understand how claims become verifiable proofs for better debugging
+- **[Annotations](docs/annotations.md)** - Discover intelligent claims and metadata for high-performance caching
