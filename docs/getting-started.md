@@ -139,8 +139,8 @@ console.log(CurrentlyLoggedInAndEmptyCart()); // true
 ## What's Next?
 This guide has covered the fundamental principles of Howard. In the following documents, we'll explore how to use these primitives to build powerful, maintainable systems:
 
-- Claims for Better Errors: Learn how to leverage claim failures to generate human-readable error messages automatically, making your application's feedback loops clear and precise.
+- Claims for Better Errors: Learn how to leverage [proofs](./proofs.md) to generate human-readable error messages automatically, making your application's feedback loops clear and precise.
 
-- Type Annotations: Discover how Howard can attach claims to your objects and values, creating a system where type checks are composable and only what's needed is computed.
+- Type Annotations: Discover how Howard can [attach claims to your objects](./annotations.md) and values, creating a system where type checks are composable and only what's needed is computed.
 
 - Claim-Based Dispatch: Dive into the ultimate goal of Howard: choosing the right implementation or function based on a set of active claims, allowing for powerful, flexible, and context-aware logic.
