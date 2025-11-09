@@ -1,0 +1,44 @@
+{
+  "name": "@relational-fabric/howard",
+  "version": "0.1.0",
+  "description": "The logical engine for a truly relational world",
+  "type": "module",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check:types": "tsc --noEmit",
+    "check:lint": "eslint .",
+    "check:lint:fix": "eslint . --fix",
+    "check:all": "npm run check:types && npm run check:lint && npm test"
+  },
+  "keywords": [
+    "logic",
+    "claims",
+    "proofs",
+    "curry-howard",
+    "type-system",
+    "predicates"
+  ],
+  "author": "Relational Fabric",
+  "license": "MIT",
+  "dependencies": {
+    "@relational-fabric/canon": "^1.2.0"
+  },
+  "peerDependencies": {
+    "@relational-fabric/canon": "^1.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "eslint": "^9.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^2.0.0"
+  }
+}
+

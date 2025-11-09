@@ -1,0 +1,9 @@
+{
+  "extends": "@relational-fabric/canon/tsconfig",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "./dist"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "examples"]
+}
