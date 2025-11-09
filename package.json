@@ -1,18 +1,26 @@
 {
   "name": "@relational-fabric/howard",
+  "type": "module",
   "version": "0.1.0",
   "description": "The logical engine for a truly relational world",
-  "type": "module",
-  "main": "./src/index.ts",
+  "author": "Relational Fabric",
+  "license": "MIT",
+  "keywords": [
+    "logic",
+    "claims",
+    "proofs",
+    "curry-howard",
+    "type-system",
+    "predicates"
+  ],
   "exports": {
     ".": "./src/index.ts"
   },
+  "main": "./src/index.ts",
   "engines": {
     "node": ">=22.0.0"
   },
   "scripts": {
-    "build:adr": "npm-run-all build:adr:toc build:adr:index",
-    "build:adr:index": "tsx scripts/generate-adr-index.ts",
     "build:adr:toc": "cd docs/adrs && npx adr generate toc",
     "check:all": "npm-run-all check:lint check:types check:test",
     "check:all:fix": "npm-run-all check:lint:fix check:types check:test",
@@ -24,25 +32,15 @@
     "check:types": "npm run check:types:all",
     "check:types:all": "npm-run-all check:types:src check:types:examples",
     "check:types:examples": "tsc --noEmit --project examples/tsconfig.json",
-    "check:types:src": "tsc --noEmit --skipLibCheck",
+    "check:types:src": "tsc --noEmit",
     "checks": "npm run check:all",
     "dev": "tsx --watch src/index.ts",
     "test": "npm run check:test"
   },
-  "keywords": [
-    "logic",
-    "claims",
-    "proofs",
-    "curry-howard",
-    "type-system",
-    "predicates"
-  ],
-  "author": "Relational Fabric",
-  "license": "MIT",
-  "dependencies": {
+  "peerDependencies": {
     "@relational-fabric/canon": "^1.2.0"
   },
-  "peerDependencies": {
+  "dependencies": {
     "@relational-fabric/canon": "^1.2.0"
   },
   "devDependencies": {

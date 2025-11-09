@@ -2,12 +2,12 @@
 
 ## The Basis for Intelligent Claims
 
-In most applications, every time a logical check is run, the entire process is re-executed, regardless of whether the underlying data has changed. This leads to redundant and computationally expensive work, especially for deeply nested objects. 
+In most applications, every time a logical check is run, the entire process is re-executed, regardless of whether the underlying data has changed. This leads to redundant and computationally expensive work, especially for deeply nested objects.
 
 Howard solves this problem by using a powerful combination of:
 
 - **Value semantics**
-- **Hashing** 
+- **Hashing**
 - **Object metadata**
 
 This system allows Howard to implicitly store and retrieve runtime data about an object, turning claims from simple functions into state-aware assertions.
@@ -46,26 +46,26 @@ The metadata Howard attaches to an object is not a black box; it's a valuable, q
 The `queryClaim` function is used to check if a specific claim has a cached proof on an object:
 
 ```javascript
-import { claims, queryClaim, queryProofs } from 'howard';
+import { claims, queryClaim, queryProofs } from 'howard'
 
 // Assume 'aUser', 'HasCart', and 'IsEmpty' already exist.
-const { aUser, HasCart } = claims({ /* ... */ });
+const { aUser, HasCart } = claims({ /* ... */ })
 
 // We define a base object
-const myUser = { id: 1, email: 'test@example.com', cart: { items: {} } };
-const myOtherUser = { id: 2, email: 'another@example.com' };
+const myUser = { id: 1, email: 'test@example.com', cart: { items: {} } }
+const myOtherUser = { id: 2, email: 'another@example.com' }
 
 // The act of running the claim automatically caches the result on `myUser`.
-aUser.and(HasCart).check(myUser);
+aUser.and(HasCart).check(myUser)
 
 // We can now query the metadata directly.
 // The return type is a Proof object or undefined.
-const cachedProof = queryClaim(aUser.and(HasCart), myUser);
+const cachedProof = queryClaim(aUser.and(HasCart), myUser)
 
-console.log(cachedProof.result); // true
+console.log(cachedProof.result) // true
 
 // This next check returns `undefined` because the claim has not yet been run on `myOtherUser`.
-console.log(queryClaim(aUser.and(HasCart), myOtherUser)); // undefined
+console.log(queryClaim(aUser.and(HasCart), myOtherUser)) // undefined
 ```
 
 ### Using `queryProofs`
@@ -73,12 +73,12 @@ console.log(queryClaim(aUser.and(HasCart), myOtherUser)); // undefined
 You can also use the `queryProofs` function to retrieve all proofs that have been stored on an object:
 
 ```javascript
-import { queryProofs } from 'howard';
+import { queryProofs } from 'howard'
 
 // `myUser` already has a cached proof from the previous example.
 // The return type is an array of Proof objects.
-const allProofs = queryProofs(myUser);
-console.log(allProofs.length); // 1
+const allProofs = queryProofs(myUser)
+console.log(allProofs.length) // 1
 ```
 
 ---

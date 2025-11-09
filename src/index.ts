@@ -1,9 +1,9 @@
 /**
  * Howard: The logical engine for a truly relational world
- * 
+ *
  * Howard is built on Canon's foundation. Users should import primitive types
  * like Predicate and TypeGuard directly from @relational-fabric/canon.
- * 
+ *
  * @example
  * ```typescript
  * // Import Canon primitives directly

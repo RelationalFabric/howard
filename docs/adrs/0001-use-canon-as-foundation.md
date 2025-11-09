@@ -37,8 +37,9 @@ We will use Canon as Howard's foundation, importing its primitives directly rath
 
 Users will import Canon types directly:
 ```typescript
+import type { Claim } from '@relational-fabric/howard'
 import { Predicate, TypeGuard } from '@relational-fabric/canon'
-import { claims, type Claim } from '@relational-fabric/howard'
+import { claims } from '@relational-fabric/howard'
 ```
 
 This makes the architectural layering explicit:
@@ -73,4 +74,3 @@ This makes the architectural layering explicit:
 This decision aligns with the principle that foundational primitives should be visible and explicit. Like React Hook libraries don't re-export React, Howard doesn't re-export Canon.
 
 The relationship is: **Canon provides the language, Howard provides the semantics.**
-

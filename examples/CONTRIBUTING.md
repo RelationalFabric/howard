@@ -30,10 +30,10 @@ const example = 'code here'
 
 /**
  * # Function Documentation
- * 
+ *
  * Use JSDoc for function, type, class, and interface definitions.
  * Headers are optional but recommended for clarity.
- * 
+ *
  * @param value - Description of parameter
  * @returns Description of return value
  */
@@ -44,7 +44,7 @@ export function exampleFunction(value: unknown): boolean {
 // Tests are the primary evidence
 if (import.meta.vitest) {
   const { it, expect } = import.meta.vitest
-  
+
   it('describes what this test verifies', () => {
     expect(exampleFunction('test')).toBe(true)
   })
@@ -85,6 +85,7 @@ Use `// ``` ... // ``` ` for code that isn't a definition:
 ```typescript
 // ```
 import { claims } from '@relational-fabric/howard'
+
 const { IsEmpty } = claims({ predicates: { isEmpty } })
 // ```
 ```
@@ -94,7 +95,7 @@ Use JSDoc for functions, types, classes:
 ```typescript
 /**
  * Checks if a value is empty.
- * 
+ *
  * @param value - The value to check
  * @returns True if empty, false otherwise
  */
@@ -108,7 +109,7 @@ Tests verify the example works:
 ```typescript
 if (import.meta.vitest) {
   const { it, expect } = import.meta.vitest
-  
+
   it('empty object satisfies isEmpty', () => {
     expect(isEmpty({})).toBe(true)
   })
@@ -138,4 +139,3 @@ When Canon's example builder is available, these examples will automatically gen
 
 For complete details on the Canon example pattern, see:
 https://relationalfabric.github.io/canon/docs/example-docs/
-

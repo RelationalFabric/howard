@@ -10,36 +10,36 @@ jobs:
   review:
     name: Run Checks
     runs-on: ubuntu-latest
-    
+
     strategy:
       matrix:
         node-version: [22.x]
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-      
+          cache: npm
+
       - name: Install dependencies
         run: npm ci --ignore-scripts
-      
+
       - name: Run linter
         run: npm run check:lint
-      
+
       - name: Type check source
         run: npm run check:types:src
-      
+
       - name: Type check examples
         run: npm run check:types:examples
-      
+
       - name: Run tests
         run: npm run check:test
-      
+
       - name: Verify ADR structure
         run: |
           if [ -f "docs/adrs/README.md" ]; then
@@ -47,4 +47,3 @@ jobs:
           else
             echo "⚠ ADR index missing, run: npm run build:adr"
           fi
-
