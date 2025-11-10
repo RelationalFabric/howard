@@ -5,5 +5,7 @@
  * Import them directly: import { Predicate, TypeGuard } from '@relational-fabric/canon'
  */
 
-// Re-export Canon types only as type aliases for documentation/clarity
-export type { Predicate, TypeGuard } from '@relational-fabric/canon'
+export * from './claim.js'
+export * from './claims.js'
+export * from './condition.js'
+export * from './naming.js'

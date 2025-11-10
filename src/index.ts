@@ -6,20 +6,10 @@
  *
  * @example
  * ```typescript
- * // Import Canon primitives directly
- * import { Predicate } from '@relational-fabric/canon'
- * // Import Howard semantics
+ * import { Predicate, TypeGuard } from '@relational-fabric/canon'
  * import { claims, type Claim } from '@relational-fabric/howard'
  * ```
  */
 
-// Claim concept (singular)
-export type { Claim } from './claim/index.js'
-export { createClaim } from './claim/index.js'
-
-// Claims factory (plural)
-export { claims } from './claims/index.js'
-export type { ClaimsInput, ClaimsResult } from './claims/index.js'
-
-// Type re-exports for documentation (users should import from Canon)
-export type { Predicate, TypeGuard } from './types/index.js'
+export * from './core.js'
+export * from './types/index.js'

@@ -1,22 +1,20 @@
 /**
- * Name transformation utilities
- *
- * Converts predicate function names to claim names following Howard's conventions.
+ * Predicate naming transformations
  */
 
 /**
  * Transform a predicate function name into a claim name.
  *
- * Follows these conventions:
- * - `isEmpty` → `IsEmpty` (is* prefix)
- * - `hasValue` → `HasValue` (has* prefix)
- * - `isValidEmail` → `IsValidEmail` (is* prefix preserved)
- * - `custom` → `Custom` (fallback to capitalization)
+ * Conventions:
+ * - isEmpty → IsEmpty
+ * - hasValue → HasValue
+ * - isValidEmail → IsValidEmail
+ * - custom → Custom (fallback)
  *
  * @param name - The predicate function name
  * @returns The transformed claim name
  */
-export function transformPredicateName(name: string): string {
+export function nameForPredicate(name: string): string {
   if (name.startsWith('is') && name.length > 2) {
     return `Is${name.slice(2)}`
   }

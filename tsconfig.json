@@ -1,8 +1,11 @@
 {
   "extends": "@relational-fabric/canon/tsconfig",
   "compilerOptions": {
+    "baseUrl": ".",
     "rootDir": ".",
-    "outDir": "./dist",
+    "paths": {
+      "~/*": ["src/*"]
+    },
     "skipLibCheck": true
   },
   "include": ["src/**/*"],

@@ -67,14 +67,14 @@ sh: /Users/bahulneel/Projects/RelationalFabric/howard/node_modules/.bin/npm-run-
 **Issue**: Canon's `src/kit.ts` has TypeScript errors that leak into downstream projects:
 
 ```
-node_modules/@relational-fabric/canon/src/kit.ts(2,31): error TS7016: 
+node_modules/@relational-fabric/canon/src/kit.ts(2,31): error TS7016:
   Could not find a declaration file for module '../eslint.js'
-  
-node_modules/@relational-fabric/canon/src/kit.ts(17,39): error TS7016: 
+
+node_modules/@relational-fabric/canon/src/kit.ts(17,39): error TS7016:
   Could not find a declaration file for module 'object-hash'
 ```
 
-**Impact**: 
+**Impact**:
 - Downstream projects must use `skipLibCheck: true` in tsconfig
 - This reduces type safety for the entire project
 - Type errors in our own code might be masked

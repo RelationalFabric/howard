@@ -1,8 +1,7 @@
 /**
- * Claim concept (singular)
- *
- * The core abstraction of Howard - a verifiable proposition about data.
+ * Claim composition classes
  */
 
-export { createClaim } from './create.js'
-export type { Claim } from './types.js'
+export { default as ClaimAnd } from './And.js'
+export { default as ClaimOn } from './On.js'
+export { default as ClaimOr } from './Or.js'
