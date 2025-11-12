@@ -24,7 +24,7 @@ Claims are our primary interface for logic. The **Curry-Howard correspondence** 
 
 ### **1. Defining Claims**
 
-The primary entry point to Howard is the declarative **claims** function, which takes a single object with three optional keys: predicates, guards, and classes. This makes your intent explicit and ensures consistency across different language environments.
+The primary entry point to Howard is the declarative **claims** function, which takes a single object with two optional keys: `relations` (for boolean propositions) and `types` (for type narrowing guards). This distinction clarifies your intent and produces semantically appropriate claim names.
 
 ```typescript
 import { claims, condition, conditionalClaims } from 'howard'
@@ -70,8 +70,8 @@ function hasCart<T extends HasCart>(user: T | unknown): user is T {
 // We use the `claims` function to transform our functions into verifiable claims.
 // The `is` prefix results in an `a` claim, and `has` results in a `Has` claim.
 const { aUser, HasCart, IsEmpty } = claims({
-  predicates: { isEmpty },
-  guards: { hasCart, isUser },
+  relations: { isEmpty },
+  types: { hasCart, isUser },
 })
 
 // A claim about an object that is both a User and has a Cart.

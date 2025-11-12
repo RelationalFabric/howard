@@ -30,9 +30,8 @@ We define type guards for our domain using Canon's TypeGuard type.
 */
 
 // ```
-import type { TypeGuard } from '@relational-fabric/canon'
 import { typeGuard } from '@relational-fabric/canon'
-import { claims } from '../src/index.js'
+import { claims } from '@relational-fabric/howard'
 
 interface Cart {
   items: Record<string, number>
@@ -49,7 +48,7 @@ interface AppState {
   currentUser: User | null
 }
 
-const isUser: TypeGuard<User> = (value): value is User => {
+const isUser = typeGuard<User>((value) => {
   return (
     typeof value === 'object'
     && value !== null
@@ -58,18 +57,18 @@ const isUser: TypeGuard<User> = (value): value is User => {
     && typeof (value as User).id === 'number'
     && typeof (value as User).email === 'string'
   )
-}
+})
 
-const hasCart: TypeGuard<{ cart: Cart }> = (value): value is { cart: Cart } => {
+const hasCart = typeGuard<{ cart: Cart }>((value) => {
   return (
     typeof value === 'object'
     && value !== null
     && 'cart' in value
     && typeof (value as { cart: Cart }).cart === 'object'
   )
-}
+})
 
-const isEmpty: TypeGuard<unknown> = typeGuard((value) => {
+const isEmpty = typeGuard<unknown>((value) => {
   if (Array.isArray(value))
     return value.length === 0
   if (typeof value === 'object' && value !== null)
@@ -88,7 +87,7 @@ We transform our type guards into claims.
 
 // ```
 const { aUser, HasCart, anEmpty: _anEmpty } = claims({
-  guards: { isUser, hasCart, isEmpty },
+  types: { isUser, hasCart, isEmpty },
 })
 // ```
 

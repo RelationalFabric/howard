@@ -20,11 +20,6 @@ creating reactive propositions that respond to your application's context.
 We'll model a simple authentication state that changes over time.
 */
 
-// ```
-import type { TypeGuard } from '@relational-fabric/canon'
-// ```
-import { typeGuard } from '@relational-fabric/canon'
-
 /*
 # Composing Conditional Claims
 
@@ -32,7 +27,10 @@ Conditional claims can be composed with pure claims using `.and()` and `.or()`.
 This lets you build complex reactive propositions.
 */
 
-import { claims } from '../src/index.js'
+// ```
+import type { TypeGuard } from '@relational-fabric/canon'
+import { typeGuard } from '@relational-fabric/canon'
+import { claims } from '@relational-fabric/howard'
 
 interface User {
   id: number
@@ -46,16 +44,16 @@ const appState = {
   currentUser: null as User | null,
 }
 
-const isUser: TypeGuard<User> = (value): value is User => {
+const isUser = typeGuard<User>((value) => {
   return (
     typeof value === 'object'
     && value !== null
     && 'id' in value
     && 'email' in value
   )
-}
+})
 
-const { aUser } = claims({ guards: { isUser } })
+const { aUser } = claims({ types: { isUser } })
 // ```
 
 /*
@@ -122,13 +120,13 @@ const isEmpty: TypeGuard<unknown> = typeGuard((value) => {
   return false
 })
 
-const { anEmpty: _anEmpty } = claims({ guards: { isEmpty } })
+const { anEmpty: _anEmpty } = claims({ types: { isEmpty } })
 
-const hasCart: TypeGuard<{ cart: unknown }> = (value): value is { cart: unknown } => {
+const hasCart = typeGuard<{ cart: unknown }>((value) => {
   return typeof value === 'object' && value !== null && 'cart' in value
-}
+})
 
-const { HasCart: UserHasCart } = claims({ guards: { hasCart } })
+const { HasCart: UserHasCart } = claims({ types: { hasCart } })
 
 // Combine conditional claim with pure claim
 const LoggedInWithCart = CurrentlyLoggedIn.and(UserHasCart)

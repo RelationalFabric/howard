@@ -18,15 +18,15 @@ import { nameForGuard, nameForPredicate } from './naming/index.js'
 export function claims<T extends ClaimsInput>(input: T): ClaimsResult<T> {
   const result: Record<string, ClaimInterface<unknown>> = {}
 
-  if (input.predicates) {
-    for (const [name, predicate] of Object.entries(input.predicates)) {
+  if (input.relations) {
+    for (const [name, predicate] of Object.entries(input.relations)) {
       const claimName = nameForPredicate(name)
       result[claimName] = new ClaimClass(predicate)
     }
   }
 
-  if (input.guards) {
-    for (const [name, guard] of Object.entries(input.guards)) {
+  if (input.types) {
+    for (const [name, guard] of Object.entries(input.types)) {
       const claimName = nameForGuard(name)
       result[claimName] = new ClaimClass(guard)
     }

@@ -4,6 +4,7 @@
 
 import type { ClaimInterface } from '../types/claim.js'
 import type { ConditionInterface } from '../types/condition.js'
+import { typeGuard } from '@relational-fabric/canon'
 import ConditionClass from '../Condition.js'
 import ClaimAnd from './And.js'
 import ClaimOr from './Or.js'
@@ -12,19 +13,19 @@ import ClaimOr from './Or.js'
  * ClaimOn class represents checking a nested property with a claim.
  */
 export default class ClaimOn<T, K extends keyof T> implements ClaimInterface<T> {
-  constructor(
-    private readonly parent: ClaimInterface<T>,
-    private readonly path: K,
-    private readonly claim: ClaimInterface<unknown>,
-  ) {}
-
-  check(value: unknown): value is T {
+  public readonly check = typeGuard<T>((value: unknown) => {
     if (!this.parent.check(value))
       return false
 
     const property = value[this.path]
     return this.claim.check(property)
-  }
+  })
+
+  constructor(
+    private readonly parent: ClaimInterface<T>,
+    private readonly path: K,
+    private readonly claim: ClaimInterface<unknown>,
+  ) {}
 
   and<U>(other: ClaimInterface<U>): ClaimInterface<T & U> {
     return new ClaimAnd(this, other)

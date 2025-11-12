@@ -21,9 +21,8 @@ We'll use a User and Cart domain to demonstrate composition.
 */
 
 // ```
-import type { TypeGuard } from '@relational-fabric/canon'
 import { typeGuard } from '@relational-fabric/canon'
-import { claims } from '../src/index.js'
+import { claims } from '@relational-fabric/howard'
 
 interface User {
   id: number
@@ -40,7 +39,7 @@ interface UserWithCart extends User {
 }
 
 // Using Canon's typeGuard helper to ensure proper type narrowing
-const isEmpty: TypeGuard<unknown> = typeGuard((value) => {
+const isEmpty = typeGuard<unknown>((value) => {
   if (Array.isArray(value))
     return value.length === 0
   if (typeof value === 'object' && value !== null)
@@ -48,25 +47,25 @@ const isEmpty: TypeGuard<unknown> = typeGuard((value) => {
   return false
 })
 
-const isUser: TypeGuard<User> = (value): value is User => {
+const isUser = typeGuard<User>((value) => {
   return (
     typeof value === 'object'
     && value !== null
     && 'id' in value
     && 'email' in value
   )
-}
+})
 
-const hasCart: TypeGuard<UserWithCart> = (value): value is UserWithCart => {
+const hasCart = typeGuard<UserWithCart>((value) => {
   return (
     isUser(value)
     && 'cart' in value
     && typeof (value as UserWithCart).cart === 'object'
   )
-}
+})
 
 const { anEmpty: _anEmpty, aUser, HasCart } = claims({
-  guards: { isEmpty, isUser, hasCart },
+  types: { isEmpty, isUser, hasCart },
 })
 // ```
 
@@ -131,16 +130,16 @@ interface Admin {
   permissions: string[]
 }
 
-const isAdmin: TypeGuard<Admin> = (value): value is Admin => {
+const isAdmin = typeGuard<Admin>((value) => {
   return (
     typeof value === 'object'
     && value !== null
     && 'adminId' in value
     && 'permissions' in value
   )
-}
+})
 
-const { anAdmin } = claims({ guards: { isAdmin } })
+const { anAdmin } = claims({ types: { isAdmin } })
 const AUserOrAdmin = aUser.or(anAdmin)
 // ```
 
@@ -175,16 +174,16 @@ interface UserWithName extends User {
   name: string
 }
 
-const hasName: TypeGuard<UserWithName> = (value): value is UserWithName => {
+const hasName = typeGuard<UserWithName>((value) => {
   return isUser(value) && 'name' in value && typeof (value as UserWithName).name === 'string'
-}
+})
 
-const isEmptyString: TypeGuard<string> = typeGuard((value): value is string => {
+const isEmptyString = typeGuard<string>((value) => {
   return typeof value === 'string' && value.length === 0
 })
 
 const { HasName, anEmptyString } = claims({
-  guards: { hasName, isEmptyString },
+  types: { hasName, isEmptyString },
 })
 
 const UserWithEmptyName = HasName.on('name', anEmptyString)

@@ -3,7 +3,7 @@
  */
 
 import type { Predicate, TypeGuard } from '@relational-fabric/canon'
-import type { ClaimInterface } from './claim.js'
+import type { ClaimFor } from './claim.js'
 import type { TransformGuardName, TransformPredicateName } from './naming.js'
 
 /**
@@ -11,23 +11,26 @@ import type { TransformGuardName, TransformPredicateName } from './naming.js'
  */
 export interface ClaimsInput {
   /**
-   * Predicate functions to transform into claims.
+   * Relational checks - boolean propositions (isEmpty, hasValue).
+   * Naming: isX → IsX, hasX → HasX
    */
-  predicates?: Record<string, Predicate<unknown>>
+  relations?: Record<string, Predicate<unknown>>
 
   /**
-   * Type guard functions to transform into claims.
+   * Type guards - type narrowing functions (isUser, isCart).
+   * Naming: isX → aX/anX, hasX → HasX
    */
-  guards?: Record<string, TypeGuard<unknown>>
+  types?: Record<string, TypeGuard<unknown>>
 }
 
 /**
  * The result of calling claims() - an object containing claim instances.
+ * Preserves the actual types from TypeGuards and Predicates.
  */
 export type ClaimsResult<T extends ClaimsInput>
   = {
-    [K in keyof T['predicates'] as TransformPredicateName<K & string>]: ClaimInterface<unknown>
+    [K in keyof T['relations'] as TransformPredicateName<K & string>]: ClaimFor<T['relations'][K]>
   }
   & {
-    [K in keyof T['guards'] as TransformGuardName<K & string>]: ClaimInterface<unknown>
+    [K in keyof T['types'] as TransformGuardName<K & string>]: ClaimFor<T['types'][K]>
   }

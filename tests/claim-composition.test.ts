@@ -11,10 +11,10 @@ import ClaimOr from '~/Claim/Or.js'
 
 describe('and', () => {
   it('performs logical AND of two claims', () => {
-    const isPositive = typeGuard<number>((value: unknown): value is number => {
+    const isPositive = typeGuard<number>((value: unknown) => {
       return typeof value === 'number' && value > 0
     })
-    const isEven = typeGuard<number>((value: unknown): value is number => {
+    const isEven = typeGuard<number>((value: unknown) => {
       return typeof value === 'number' && value % 2 === 0
     })
 
@@ -29,13 +29,13 @@ describe('and', () => {
   })
 
   it('supports chaining with and()', () => {
-    const isPositive = typeGuard<number>((value: unknown): value is number => {
+    const isPositive = typeGuard<number>((value: unknown) => {
       return typeof value === 'number' && value > 0
     })
-    const isEven = typeGuard<number>((value: unknown): value is number => {
+    const isEven = typeGuard<number>((value: unknown) => {
       return typeof value === 'number' && value % 2 === 0
     })
-    const isLessThan10 = typeGuard<number>((value: unknown): value is number => {
+    const isLessThan10 = typeGuard<number>((value: unknown) => {
       return typeof value === 'number' && value < 10
     })
 
@@ -51,10 +51,10 @@ describe('and', () => {
 
 describe('or', () => {
   it('performs logical OR of two claims', () => {
-    const isPositive = typeGuard<number>((value: unknown): value is number => {
+    const isPositive = typeGuard<number>((value: unknown) => {
       return typeof value === 'number' && value > 0
     })
-    const isZero = typeGuard<number>((value: unknown): value is number => {
+    const isZero = typeGuard<number>((value: unknown) => {
       return value === 0
     })
 
@@ -68,9 +68,9 @@ describe('or', () => {
   })
 
   it('supports chaining with or()', () => {
-    const isZero = typeGuard<number>((value: unknown): value is number => value === 0)
-    const isOne = typeGuard<number>((value: unknown): value is number => value === 1)
-    const isTwo = typeGuard<number>((value: unknown): value is number => value === 2)
+    const isZero = typeGuard<number>((value: unknown) => value === 0)
+    const isOne = typeGuard<number>((value: unknown) => value === 1)
+    const isTwo = typeGuard<number>((value: unknown) => value === 2)
 
     const claim1 = new Claim(isZero)
     const claim2 = new Claim(isOne)
@@ -91,14 +91,14 @@ describe('on', () => {
       age: number
     }
 
-    const isPerson = typeGuard<Person>((value: unknown): value is Person => {
+    const isPerson = typeGuard<Person>((value: unknown) => {
       return typeof value === 'object'
         && value !== null
         && 'name' in value
         && 'age' in value
     })
 
-    const isAdult = typeGuard<number>((value: unknown): value is number => {
+    const isAdult = typeGuard<number>((value: unknown) => {
       return typeof value === 'number' && value >= 18
     })
 
@@ -117,14 +117,14 @@ describe('on', () => {
       age: number
     }
 
-    const isPerson = typeGuard<Person>((value: unknown): value is Person => {
+    const isPerson = typeGuard<Person>((value: unknown) => {
       return typeof value === 'object'
         && value !== null
         && 'name' in value
         && 'age' in value
     })
 
-    const isAdult = typeGuard<number>((value: unknown): value is number => {
+    const isAdult = typeGuard<number>((value: unknown) => {
       return typeof value === 'number' && value >= 18
     })
 
@@ -146,14 +146,14 @@ describe('on', () => {
       address: Address
     }
 
-    const isPerson = typeGuard<Person>((value: unknown): value is Person => {
+    const isPerson = typeGuard<Person>((value: unknown) => {
       return typeof value === 'object'
         && value !== null
         && 'name' in value
         && 'address' in value
     })
 
-    const isNonEmpty = typeGuard<string>((value: unknown): value is string => {
+    const isNonEmpty = typeGuard<string>((value: unknown) => {
       return typeof value === 'string' && value.length > 0
     })
 

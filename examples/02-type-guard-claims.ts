@@ -18,22 +18,15 @@ runtime verification and compile-time type information.
 # Defining Types
 
 We start with interfaces that describe our domain. These are the types we want
-our claims to prove and narrow to.
+our claims to verify and narrow to.
 */
 
-// ```
-// ```
-
 /*
-# Creating Type Guards
+# Type Guards
 
 Type guards use TypeScript's `value is Type` syntax. They're predicates that
 also provide type information to the compiler.
 */
-
-// ```
-import type { Predicate, TypeGuard } from '@relational-fabric/canon'
-// ```
 
 /*
 # Transforming Guards into Claims
@@ -47,9 +40,24 @@ This creates more natural, English-like claim names.
 */
 
 // ```
-import { claims } from '../src/index.js'
+import { typeGuard } from '@relational-fabric/canon'
+import { claims } from '@relational-fabric/howard'
 
-const isUser: TypeGuard<User> = (value): value is User => {
+interface User {
+  id: number
+  email: string
+  name?: string
+}
+
+interface Cart {
+  items: Record<string, number>
+}
+
+interface HasCart {
+  cart?: Cart
+}
+
+const isUser = typeGuard<User>((value) => {
   return (
     typeof value === 'object'
     && value !== null
@@ -58,18 +66,18 @@ const isUser: TypeGuard<User> = (value): value is User => {
     && typeof (value as User).id === 'number'
     && typeof (value as User).email === 'string'
   )
-}
+})
 
-const hasCart: TypeGuard<HasCart> = (value): value is HasCart => {
+const hasCart = typeGuard<HasCart>((value) => {
   return (
     typeof value === 'object'
     && value !== null
     && 'cart' in value
   )
-}
+})
 
 const { aUser, HasCart: UserHasCart } = claims({
-  guards: { isUser, hasCart },
+  types: { isUser, hasCart },
 })
 // ```
 
@@ -117,53 +125,43 @@ if (import.meta.vitest) {
   })
 }
 
-const isEmpty: Predicate<unknown> = (value) => {
-  if (Array.isArray(value))
-    return value.length === 0
-  if (typeof value === 'object' && value !== null)
-    return Object.keys(value).length === 0
-  return false
-}
+/*
+# The Power of Type Narrowing
 
-const { IsEmpty, aUser: LoggedInUser } = claims({
-  predicates: { isEmpty },
-  guards: { isUser },
+The magic of type guard claims is that they work seamlessly with TypeScript's
+control flow analysis. When you check a claim in an `if` statement, TypeScript
+automatically narrows the type for you.
+
+This means your editor gets full autocomplete, and you get compile-time safety
+for your runtime checks.
+*/
+
+/*
+# Naming Flexibility
+
+TypeGuards are also Predicates (they return boolean), so you can choose which
+naming convention to use based on your preference:
+*/
+
+// ```
+const isAdmin = typeGuard<User>((value) => {
+  return typeof value === 'object' && value !== null && 'id' in value
 })
+
+// Use as relation for IsAdmin name
+const { IsAdmin } = claims({ relations: { isAdmin } })
+
+// OR use as type for anAdmin name
+const { anAdmin } = claims({ types: { isAdmin } })
 // ```
 
 if (import.meta.vitest) {
   const { describe, expect, it } = import.meta.vitest
 
-  describe('Mixed Predicates and Guards', () => {
-    it('Both predicate and guard claims are created', () => {
-      expect(IsEmpty.check({})).toBe(true)
-      expect(LoggedInUser.check({ id: 1, email: 'test@example.com' })).toBe(true)
-    })
-
-    it('Empty object satisfies IsEmpty but not aUser', () => {
-      const emptyObj = {}
-
-      expect(IsEmpty.check(emptyObj)).toBe(true)
-      expect(LoggedInUser.check(emptyObj)).toBe(false)
-    })
-
-    it('Valid user satisfies aUser but not IsEmpty', () => {
-      const user = { id: 1, email: 'test@example.com' }
-
-      expect(LoggedInUser.check(user)).toBe(true)
-      expect(IsEmpty.check(user)).toBe(false)
+  describe('Naming Flexibility', () => {
+    it('Same guard can produce different claim names', () => {
+      expect(IsAdmin.check({ id: 1, email: 'admin@test.com' })).toBe(true)
+      expect(anAdmin.check({ id: 1, email: 'admin@test.com' })).toBe(true)
     })
   })
 }
-
-/*
-# The Power of Type Narrowing
-
-Type guard claims don't just return booleans—they teach TypeScript about your data.
-This means you get both runtime verification and compile-time type safety. The
-compiler understands what `.check()` proves, eliminating the need for type assertions
-and making your code safer by default.
-
-Next, we'll see how to compose these claims to build rich, interconnected propositions
-about your data.
-*/

@@ -9,7 +9,7 @@ import Claim from './Claim.js'
 describe('claim', () => {
   describe('check()', () => {
     it('evaluates the underlying predicate', () => {
-      const isPositive = typeGuard<number>((value: unknown): value is number => {
+      const isPositive = typeGuard<number>((value: unknown) => {
         return typeof value === 'number' && value > 0
       })
       const claim = new Claim(isPositive)
@@ -22,10 +22,10 @@ describe('claim', () => {
 
   describe('and()', () => {
     it('returns a composed claim', () => {
-      const isPositive = typeGuard<number>((value: unknown): value is number => {
+      const isPositive = typeGuard<number>((value: unknown) => {
         return typeof value === 'number' && value > 0
       })
-      const isEven = typeGuard<number>((value: unknown): value is number => {
+      const isEven = typeGuard<number>((value: unknown) => {
         return typeof value === 'number' && value % 2 === 0
       })
 
@@ -41,10 +41,10 @@ describe('claim', () => {
 
   describe('or()', () => {
     it('returns a composed claim', () => {
-      const isPositive = typeGuard<number>((value: unknown): value is number => {
+      const isPositive = typeGuard<number>((value: unknown) => {
         return typeof value === 'number' && value > 0
       })
-      const isZero = typeGuard<number>((value: unknown): value is number => {
+      const isZero = typeGuard<number>((value: unknown) => {
         return value === 0
       })
 
@@ -65,14 +65,14 @@ describe('claim', () => {
         age: number
       }
 
-      const isPerson = typeGuard<Person>((value: unknown): value is Person => {
+      const isPerson = typeGuard<Person>((value: unknown) => {
         return typeof value === 'object'
           && value !== null
           && 'name' in value
           && 'age' in value
       })
 
-      const isAdult = typeGuard<number>((value: unknown): value is number => {
+      const isAdult = typeGuard<number>((value: unknown) => {
         return typeof value === 'number' && value >= 18
       })
 
@@ -88,7 +88,7 @@ describe('claim', () => {
 
   describe('given()', () => {
     it('returns a Condition', () => {
-      const isTrue = typeGuard<boolean>((value: unknown): value is boolean => value === true)
+      const isTrue = typeGuard<boolean>((value: unknown) => value === true)
       const claim = new Claim(isTrue)
 
       const state = { value: true }

@@ -4,6 +4,7 @@
 
 import type { ClaimInterface } from '../types/claim.js'
 import type { ConditionInterface } from '../types/condition.js'
+import { typeGuard } from '@relational-fabric/canon'
 import ConditionClass from '../Condition.js'
 import ClaimAnd from './And.js'
 import ClaimOn from './On.js'
@@ -12,14 +13,13 @@ import ClaimOn from './On.js'
  * ClaimOr class represents the logical OR composition of two claims.
  */
 export default class ClaimOr<T, U> implements ClaimInterface<T | U> {
+  public readonly check = typeGuard<T | U>((value: unknown) =>
+    this.left.check(value) || this.right.check(value))
+
   constructor(
     private readonly left: ClaimInterface<T>,
     private readonly right: ClaimInterface<U>,
   ) {}
-
-  check(value: unknown): value is T | U {
-    return this.left.check(value) || this.right.check(value)
-  }
 
   and<V>(other: ClaimInterface<V>): ClaimInterface<(T | U) & V> {
     return new ClaimAnd(this, other) as ClaimInterface<(T | U) & V>

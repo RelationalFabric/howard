@@ -9,7 +9,7 @@ import Condition from './Condition.js'
 
 describe('condition', () => {
   it('creates a condition from a claim and reference function', () => {
-    const isTrue = typeGuard<boolean>((value: unknown): value is boolean => value === true)
+    const isTrue = typeGuard<boolean>((value: unknown) => value === true)
     const claim = new Claim(isTrue)
 
     const state = { value: true }
@@ -22,7 +22,7 @@ describe('condition', () => {
 
   describe('eager()', () => {
     it('returns a callable Conditional', () => {
-      const isTrue = typeGuard<boolean>((value: unknown): value is boolean => value === true)
+      const isTrue = typeGuard<boolean>((value: unknown) => value === true)
       const claim = new Claim(isTrue)
 
       const state = { value: true }
@@ -37,8 +37,8 @@ describe('condition', () => {
     })
 
     it('supports composition with and()', () => {
-      const isTrue = typeGuard<boolean>((value: unknown): value is boolean => value === true)
-      const isFalse = typeGuard<boolean>((value: unknown): value is boolean => value === false)
+      const isTrue = typeGuard<boolean>((value: unknown) => value === true)
+      const isFalse = typeGuard<boolean>((value: unknown) => value === false)
       const claim1 = new Claim(isTrue)
       const claim2 = new Claim(isFalse)
 
@@ -51,8 +51,8 @@ describe('condition', () => {
     })
 
     it('supports composition with or()', () => {
-      const isTrue = typeGuard<boolean>((value: unknown): value is boolean => value === true)
-      const isFalse = typeGuard<boolean>((value: unknown): value is boolean => value === false)
+      const isTrue = typeGuard<boolean>((value: unknown) => value === true)
+      const isFalse = typeGuard<boolean>((value: unknown) => value === false)
       const claim1 = new Claim(isTrue)
       const claim2 = new Claim(isFalse)
 
@@ -67,7 +67,7 @@ describe('condition', () => {
 
   describe('lazy()', () => {
     it('returns a callable Conditional', () => {
-      const isTrue = typeGuard<boolean>((value: unknown): value is boolean => value === true)
+      const isTrue = typeGuard<boolean>((value: unknown) => value === true)
       const claim = new Claim(isTrue)
 
       const state = { value: true }
@@ -82,8 +82,8 @@ describe('condition', () => {
     })
 
     it('supports composition with and()', () => {
-      const isTrue = typeGuard<boolean>((value: unknown): value is boolean => value === true)
-      const isFalse = typeGuard<boolean>((value: unknown): value is boolean => value === false)
+      const isTrue = typeGuard<boolean>((value: unknown) => value === true)
+      const isFalse = typeGuard<boolean>((value: unknown) => value === false)
       const claim1 = new Claim(isTrue)
       const claim2 = new Claim(isFalse)
 
@@ -96,8 +96,8 @@ describe('condition', () => {
     })
 
     it('supports composition with or()', () => {
-      const isTrue = typeGuard<boolean>((value: unknown): value is boolean => value === true)
-      const isFalse = typeGuard<boolean>((value: unknown): value is boolean => value === false)
+      const isTrue = typeGuard<boolean>((value: unknown) => value === true)
+      const isFalse = typeGuard<boolean>((value: unknown) => value === false)
       const claim1 = new Claim(isTrue)
       const claim2 = new Claim(isFalse)
 

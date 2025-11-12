@@ -14,7 +14,7 @@ describe('claims()', () => {
       const hasValue = typeGuard<unknown>((_value: unknown) => false)
 
       const result = claims({
-        predicates: { isEmpty, hasValue },
+        relations: { isEmpty, hasValue },
       })
 
       expect('IsEmpty' in result).toBe(true)
@@ -28,7 +28,7 @@ describe('claims()', () => {
         return false
       }
 
-      const { IsEmpty } = claims({ predicates: { isEmpty } })
+      const { IsEmpty } = claims({ relations: { isEmpty } })
 
       expect(IsEmpty.check([])).toBe(true)
       expect(IsEmpty.check([1])).toBe(false)
@@ -44,7 +44,7 @@ describe('claims()', () => {
       const hasCart = typeGuard<{ cart: unknown }>((_value: unknown) => false)
 
       const result = claims({
-        guards: { isUser, hasCart },
+        types: { isUser, hasCart },
       })
 
       expect('aUser' in result).toBe(true)
@@ -58,7 +58,7 @@ describe('claims()', () => {
 
       const isUser = typeGuard<User>((value: unknown) => typeof value === 'object' && value !== null && 'id' in value)
 
-      const { aUser } = claims({ guards: { isUser } })
+      const { aUser } = claims({ types: { isUser } })
 
       expect(aUser.check({ id: 1 })).toBe(true)
       expect(aUser.check({})).toBe(false)
@@ -74,8 +74,8 @@ describe('claims()', () => {
       const isUser = typeGuard<User>((_value: unknown) => false)
 
       const result = claims({
-        predicates: { isEmpty },
-        guards: { isUser },
+        relations: { isEmpty },
+        types: { isUser },
       })
 
       expect('IsEmpty' in result).toBe(true)
@@ -86,14 +86,14 @@ describe('claims()', () => {
   describe('created claims', () => {
     it('have check method', () => {
       const isEmpty = typeGuard<unknown>((_value: unknown) => false)
-      const { anEmpty } = claims({ guards: { isEmpty } })
+      const { anEmpty } = claims({ types: { isEmpty } })
 
       expect(typeof anEmpty.check).toBe('function')
     })
 
     it('have composition methods', () => {
       const isEmpty = typeGuard<unknown>((_value: unknown) => false)
-      const { anEmpty } = claims({ guards: { isEmpty } })
+      const { anEmpty } = claims({ types: { isEmpty } })
 
       expect(typeof anEmpty.and).toBe('function')
       expect(typeof anEmpty.or).toBe('function')

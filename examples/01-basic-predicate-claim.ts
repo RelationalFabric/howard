@@ -36,9 +36,13 @@ to proposition.
 */
 
 // ```
-import { claims } from '../src/index.js'
+import { typeGuard } from '@relational-fabric/canon'
+import { claims } from '@relational-fabric/howard'
 
-function isEmpty(value: unknown): boolean {
+// Empty values can be empty arrays, empty objects, or empty strings
+type EmptyValue = [] | Record<string, never> | ''
+
+const isEmpty = typeGuard<EmptyValue>((value) => {
   if (Array.isArray(value)) {
     return value.length === 0
   }
@@ -49,10 +53,10 @@ function isEmpty(value: unknown): boolean {
     return value.length === 0
   }
   return false
-}
+})
 
 const { IsEmpty } = claims({
-  predicates: { isEmpty },
+  relations: { isEmpty },
 })
 // ```
 
@@ -121,7 +125,7 @@ function hasLength(value: unknown): boolean {
 }
 
 const { IsPositive, HasLength } = claims({
-  predicates: {
+  relations: {
     isPositive,
     hasLength,
   },

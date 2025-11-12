@@ -2,7 +2,9 @@
  * Claim type definitions
  */
 
+import type { Predicate, TypeGuard } from '@relational-fabric/canon'
 import type { ConditionInterface } from './condition.js'
+import type { Constructor } from './utils.js'
 
 /**
  * A Claim is a first-class object representing a verifiable proposition.
@@ -12,8 +14,9 @@ import type { ConditionInterface } from './condition.js'
 export interface ClaimInterface<T> {
   /**
    * Check if a value satisfies this claim.
+   * Uses Canon's TypeGuard pattern to preserve specific subtypes.
    */
-  check: (value: unknown) => value is T
+  check: TypeGuard<T>
 
   /**
    * Compose with another claim using logical AND.
@@ -37,6 +40,21 @@ export interface ClaimInterface<T> {
 }
 
 /**
- * Type alias for a claim that accepts any value.
+ * Alias for a claim that can hold any type.
+ * Use this when you need to reference claims without caring about their specific type.
  */
 export type AnyClaim = ClaimInterface<unknown>
+
+/**
+ * Extracts the narrowed type from a TypeGuard, Predicate, or Constructor and produces the corresponding ClaimInterface.
+ *
+ * - For TypeGuard<U>: produces ClaimInterface<U>
+ * - For Predicate<U>: produces ClaimInterface<U>
+ * - For Constructor<U>: produces ClaimInterface<U>
+ * - For other types: produces ClaimInterface<unknown>
+ */
+export type ClaimFor<T>
+  = T extends TypeGuard<infer U> ? ClaimInterface<U>
+    : T extends Predicate<infer U> ? ClaimInterface<U>
+      : T extends Constructor<infer U> ? ClaimInterface<U>
+        : ClaimInterface<unknown>
