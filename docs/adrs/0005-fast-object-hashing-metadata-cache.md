@@ -7,7 +7,7 @@ Proposed
 - Howard needs deterministic, high-performance object hashing to support incremental reasoning about structural equality.
 - Running a full serialization pass on every hash request is too expensive for large or frequently-mutated objects.
 - We control the runtime environment (Node ≥ 20) and can attach opaque metadata to every managed object without exposing it to userland.
-- The runtime already exposes hooks for property definition, mutation, and deletion; we can rely on those hooks to keep cached metadata in sync.
+- We assume the runtime keeps per-object metadata accurate and immediately observable.
 - Hash invalidation for a single property key is already available; the missing piece is specifying how we compose per-key hashes into an object hash and how we keep the structure correct.
 
 ## Decision
@@ -16,7 +16,6 @@ Proposed
 We will attach a metadata record to each managed object that caches:
 - `objectHash`: the current 128-bit hash of the object's own enumerable properties.
 - `keyEntries`: a side table keyed by property name (string or symbol) storing the last known hash contribution for that property.
-- `version`: a monotonic counter that increments every time any property-level mutation occurs, enabling cheap stale-checking by consumers.
 
 All metadata is stored in an out-of-band side table (e.g. `WeakMap<object, Metadata>`) so that the object graph remains serializable without leaking the cache to userland.
 
@@ -59,19 +58,18 @@ objectHash = finalize128(
 ## Rationale
 1. **Incremental O(1) Updates**: Storing per-key contribution hashes lets us avoid recomputing unaffected properties.
 2. **Stable Composition**: XOR folding with per-object salts keeps the hash order-independent while guarding against identical sub-structure collisions.
-3. **Version Tracking**: Consumers can perform optimistic reads by comparing the cached version before/after operations.
+3. **Consistent Snapshots**: With accurate metadata, consumers can treat `objectHash` as the canonical representation of the object's current structure.
 4. **Runtime Isolation**: Side-table metadata avoids polluting user-visible object shapes, keeping the mechanism transparent.
 5. **Native-Friendly**: `xxHash3` is available in modern Node runtimes with high throughput and negligible startup cost.
 
 ## Maintenance Requirements
 
-- **Hook Coverage**: Every mutation path (direct `set`, `defineProperty`, `delete`, `Object.assign`, spread, array mutators, structured cloning) must funnel into a mechanism that re-evaluates affected entry hashes.
-- **Invalidation Propagation**: When a property's value is another managed object whose `version` changes, the parent must receive a `keyInvalidated` signal so the corresponding entry hash can be recomputed.
-- **Value Hash Fidelity**: Primitive hashing must be canonical (`-0` vs `0`, `NaN` normalization, bigint range bounds). For objects, we must read the child's `objectHash`; if unavailable, adopt before hashing.
+- **Metadata Integrity**: Each managed object must expose `objectHash` and `keyEntries` entries that accurately reflect its enumerable structure at read time.
+- **Value Hash Fidelity**: Primitive hashing must be canonical (`-0` vs `0`, `NaN` normalization, bigint range bounds). For objects, read the child's `objectHash`; if unavailable, adopt before hashing.
 - **Garbage Safety**: Metadata is stored in `WeakMap` so that unreferenced objects can be collected without manual cleanup.
 - **Concurrency Discipline**: Any future shared-memory strategy must synchronize mutations to avoid torn updates of the XOR fold.
 - **Testing Matrix**: Include mutation stress tests (randomized operations) and collision-resistance property tests comparing to a baseline serializer hash.
-- **Observability**: Expose debug instrumentation (`Howard.__debugHash(object)`) to introspect entry hashes and versions during development.
+- **Observability**: Expose debug instrumentation (`Howard.__debugHash(object)`) to introspect entry hashes and salts during development.
 
 ## Consequences
 
