@@ -24,13 +24,13 @@ Proposed
 
 ### Tooling & Execution
 - Use Node ≥ 20 and `vitest`’s built-in benchmark runner (`vitest bench`) augmented with high-resolution timers (`performance.now`).
-- Suites must expose both CLI (`pnpm bench`) and programmatic interfaces so CI and local workflows share identical execution paths.
-- Each suite documents minimum hardware expectations and how to run in isolation (`pnpm bench --filter hashing`).
+- Suites must expose both CLI (`npm run bench`) and programmatic interfaces so CI and local workflows share identical execution paths.
+- Each suite documents minimum hardware expectations and how to run in isolation (`npm run bench -- --filter hashing`).
 
 ### CI Integration
 - Add a non-blocking CI job (`benchmarks`) that:
-  1. Installs dependencies with `pnpm`.
-  2. Runs `pnpm bench` with production build artifacts.
+  1. Installs dependencies with `npm ci`.
+  2. Runs `npm run bench` with production build artifacts.
   3. Publishes results to `benchmarks/results/latest.json`.
 - A follow-up alerting workflow compares `latest.json` with the previous baseline and posts findings to pull requests. Blocking behavior is deferred until confidence in variance thresholds is established.
 
