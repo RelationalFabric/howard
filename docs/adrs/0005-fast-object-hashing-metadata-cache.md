@@ -1,4 +1,4 @@
-# ADR 0005: Fast Object Hashing Composition Algorithm
+# ADR 0005: Fast Object Hashing Composition Function
 
 ## Status
 Proposed
@@ -6,22 +6,23 @@ Proposed
 ## Context
 - Howard needs deterministic, high-performance object hashing to support incremental reasoning about structural equality.
 - Running a full serialization pass on every hash request is too expensive for large or frequently-mutated objects.
-- We control the runtime environment (Node ≥ 20) and can observe stable per-object identifiers plus accurate `(propertyKey, valueHash)` pairs for every enumerable property.
+- We control the runtime environment (Node ≥ 20) and can observe a stable per-object identifier plus a canonical mapping from property keys to precomputed value hashes.
 - Hash invalidation for a single property key is already available; the missing piece is specifying how we compose per-key hashes into an object hash and how we keep the structure correct.
 
 ## Decision
 
-### Inputs
-Given an object, the runtime supplies the following immutable inputs to the hashing algorithm:
+### Function Inputs
+The hash is derived from immutable inputs supplied by the runtime:
 - `objectId`: a stable 64-bit random identifier unique per object.
-- For every enumerable property key (string or symbol), a canonical `valueHash` representing the property's current value.
+- `entries`: a finite map `{ propertyKey → valueHash }` covering every enumerable property (string or symbol key) with its canonical value hash.
 
 ### Hash Function
-- Base primitive hashing uses `xxHash3` 128-bit (available via native addon) for its trade-off between throughput and avalanche quality.
-- Object hashing is compositional:
-  1. Each property contributes an **entry hash** derived from the tuple `(objectId, propertyKey, valueHash)`.
-  2. Entry hashes are combined through a commutative XOR fold, followed by a final avalanche mix to minimize collision bias.
-- `objectId` prevents cross-object collisions when identical key/value pairs appear in different objects.
+Define `objectHash(objectId, entries)` as follows:
+1. For each `(propertyKey, valueHash)` in `entries`, compute an **entry hash** using the tuple `(objectId, propertyKey, valueHash)`.
+2. Combine all entry hashes through a commutative XOR fold.
+3. Apply a final avalanche mix to the folded value to minimize collision bias.
+
+Base primitive hashing uses `xxHash3` 128-bit (available via native addon) for its trade-off between throughput and avalanche quality, and `objectId` prevents cross-object collisions when identical key/value pairs appear in different objects.
 
 ### Entry Hash Formula
 ```
