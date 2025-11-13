@@ -6,7 +6,7 @@ Proposed
 ## Context
 - Relational Fabric requires a deterministic way to map arbitrary JavaScript object graphs into verifiable addresses that underpin Claims and fast predicate dispatch.
 - Howard is positioned to become the invariant integrity primitive inside the ecosystem, and must therefore supply predictable hashes for values, references, and their joint composition.
-- Previous ADRs (notably ADR 0006) define the fast object hash composition function; this ADR extends the scope to the full Structural Integrity Engine (SIE) that manages metadata, incremental updates, and axiomatic termination guarantees.
+- A fast object hash composition function is expected to land soon; this ADR captures the surrounding Structural Integrity Engine (SIE) that will manage metadata, incremental updates, and axiomatic termination guarantees around that capability.
 
 ## Decision
 
@@ -32,7 +32,7 @@ Howard stores state using Canon's metadata primitives (`meta.ts`), maintaining a
 ### Hash Computation Pipeline
 1. **Reference Hash (`H_R`):** Query Canon for `IdAxiom` or `HashableAxiom`. If both return `undefined`, throw a fatal exception. Otherwise produce a stable reference hash (e.g., salted identity digest).
 2. **Value Hash (`H_V`):**
-   - Traverse enumerable properties using the hashing algorithm from ADR 0006.
+   - Traverse enumerable properties using the hashing algorithm defined for Howard's fast hashing module.
    - Manage cycles by injecting the child object's `H_R` as the placeholder value when revisiting an already-seen node.
    - Resolve opaque values through Canon's `HashableAxiom`, hashing the returned dual.
 3. **Complete Hash (`H_J`):** Compute `Hash(concat(H_V, H_R))` using the same primitive hash family (xxHash3-128) to guarantee contextual stability.
@@ -75,5 +75,3 @@ Howard stores state using Canon's metadata primitives (`meta.ts`), maintaining a
 
 ## References
 - ADR 0001: Use Canon as Foundation
-- ADR 0005: Benchmarking Strategy
-- ADR 0006: Fast Object Hashing Composition Function
