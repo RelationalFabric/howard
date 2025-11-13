@@ -52,26 +52,9 @@ objectHash = finalize128(
 - `finalize128` runs a final avalanche step to mitigate the slight bias introduced by XOR.
 - Empty objects produce the fixed constant `EMPTY_OBJECT_HASH`.
 
-### Mutation Handling
-- On `defineProperty` / `set`:
-  1. Compute `valueHash` (delegating to specialized strategies for primitives, arrays, Maps/Sets, and nested managed objects).
-  2. Recompute the entry hash.
-  3. XOR out the previous entry hash (if any) from the aggregate, XOR in the new entry hash.
-  4. Update `keyEntries[key]` and `objectHash`; bump `version`.
-- On `deleteProperty`:
-  1. Look up cached entry hash; XOR it out of the aggregate.
-  2. Remove `keyEntries[key]`; recompute `objectHash`; bump `version`.
-- On structural mutations of nested objects, we rely on the nested object to bump its own `version` and invalidate its parents through the existing key-level invalidation hook.
-
-### Creation & Adoption
-- All managed objects are created via `Howard.createObject(initialValue)` which:
-  1. Allocates metadata with fresh `objectId` and `EMPTY_OBJECT_HASH`.
-  2. Seeds each entry through the mutation pipeline to ensure caches are consistent.
-- External objects must be explicitly adopted (`Howard.adopt(object, schema?)`), which performs the same bootstrapping pass and marks the object as managed.
-
-### Array & Typed Collection Strategy
-- Arrays are treated as objects with stringified indices plus a pseudo-key `length`; this keeps incremental updates O(1) for push/pop/shift/unshift.
-- Typed collections (`Map`, `Set`, `WeakMap`, `WeakSet`) expose iterable views; we hash them by combining entry hashes derived from the iteration order plus stable per-entry salts to prevent order sensitivity.
+### Structural Interpretation
+- Arrays contribute entry hashes for stringified integer indices plus a pseudo-key `length`, ensuring structural equivalence regardless of construction order.
+- Typed collections (`Map`, `Set`, `WeakMap`, `WeakSet`) expose deterministic iterable snapshots; each entry is hashed as `(collectionId, elementSalt, elementHash)` so the aggregate remains order-independent.
 
 ## Rationale
 1. **Incremental O(1) Updates**: Storing per-key contribution hashes lets us avoid recomputing unaffected properties.
@@ -82,8 +65,8 @@ objectHash = finalize128(
 
 ## Maintenance Requirements
 
-- **Hook Coverage**: Every mutation path (direct `set`, `defineProperty`, `delete`, `Object.assign`, spread, array mutators, structured cloning) must funnel through the mutation pipeline to keep metadata correct.
-- **Invalidation Propagation**: When a property's value is another managed object whose `version` changes, the parent must receive a `keyInvalidated` signal that triggers the recompute step above.
+- **Hook Coverage**: Every mutation path (direct `set`, `defineProperty`, `delete`, `Object.assign`, spread, array mutators, structured cloning) must funnel into a mechanism that re-evaluates affected entry hashes.
+- **Invalidation Propagation**: When a property's value is another managed object whose `version` changes, the parent must receive a `keyInvalidated` signal so the corresponding entry hash can be recomputed.
 - **Value Hash Fidelity**: Primitive hashing must be canonical (`-0` vs `0`, `NaN` normalization, bigint range bounds). For objects, we must read the child's `objectHash`; if unavailable, adopt before hashing.
 - **Garbage Safety**: Metadata is stored in `WeakMap` so that unreferenced objects can be collected without manual cleanup.
 - **Concurrency Discipline**: Any future shared-memory strategy must synchronize mutations to avoid torn updates of the XOR fold.
