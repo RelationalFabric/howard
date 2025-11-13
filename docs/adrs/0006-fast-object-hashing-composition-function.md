@@ -1,4 +1,4 @@
-# ADR 0005: Fast Object Hashing Composition Function
+# ADR 0006: Fast Object Hashing Composition Function
 
 ## Status
 Proposed
@@ -99,3 +99,4 @@ objectHash = finalize128(
 ## References
 - [xxHash3 128-bit reference implementation](https://cyan4973.github.io/xxHash/)
 - ADR 0001: Use Canon as Foundation
+- ADR 0005: Benchmarking Strategy

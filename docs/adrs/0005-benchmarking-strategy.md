@@ -1,11 +1,11 @@
-# ADR 0007: Benchmarking Strategy
+# ADR 0005: Benchmarking Strategy
 
 ## Status
 Proposed
 
 ## Context
 - As Howard evolves into the invariant integrity primitive for Relational Fabric, performance regressions directly impact predicate dispatch latency and claim verification throughput.
-- Existing ADRs (0005, 0006) specify hashing algorithms and structural integrity mechanics but do not establish how performance characteristics will be measured or protected over time.
+- Existing ADRs (0006, 0007) specify hashing algorithms and structural integrity mechanics but do not establish how performance characteristics will be measured or protected over time.
 - The project currently lacks a consistent methodology or location for storing benchmark harnesses and historical results.
 
 ## Decision
@@ -62,5 +62,5 @@ Proposed
 - How frequently should baselines be refreshed to reflect intentional improvements?
 
 ## References
-- ADR 0005: Fast Object Hashing Composition Function
-- ADR 0006: Howard Structural Integrity Engine
+- ADR 0006: Fast Object Hashing Composition Function
+- ADR 0007: Howard Structural Integrity Engine
