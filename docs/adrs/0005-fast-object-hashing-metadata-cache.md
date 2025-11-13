@@ -1,4 +1,4 @@
-# ADR 0005: Fast Object Hashing via Metadata Cache
+# ADR 0005: Fast Object Hashing Composition Algorithm
 
 ## Status
 Proposed
@@ -6,25 +6,22 @@ Proposed
 ## Context
 - Howard needs deterministic, high-performance object hashing to support incremental reasoning about structural equality.
 - Running a full serialization pass on every hash request is too expensive for large or frequently-mutated objects.
-- We control the runtime environment (Node ≥ 20) and can attach opaque metadata to every managed object without exposing it to userland.
-- We assume the runtime keeps per-object metadata accurate and immediately observable.
+- We control the runtime environment (Node ≥ 20) and can observe stable per-object identifiers plus accurate `(propertyKey, valueHash)` pairs for every enumerable property.
 - Hash invalidation for a single property key is already available; the missing piece is specifying how we compose per-key hashes into an object hash and how we keep the structure correct.
 
 ## Decision
 
-### Overview
-We will attach a metadata record to each managed object that caches:
-- `objectHash`: the current 128-bit hash of the object's own enumerable properties.
-- `keyEntries`: a side table keyed by property name (string or symbol) storing the last known hash contribution for that property.
-
-All metadata is stored in an out-of-band side table (e.g. `WeakMap<object, Metadata>`) so that the object graph remains serializable without leaking the cache to userland.
+### Inputs
+Given an object, the runtime supplies the following immutable inputs to the hashing algorithm:
+- `objectId`: a stable 64-bit random identifier unique per object.
+- For every enumerable property key (string or symbol), a canonical `valueHash` representing the property's current value.
 
 ### Hash Function
 - Base primitive hashing uses `xxHash3` 128-bit (available via native addon) for its trade-off between throughput and avalanche quality.
 - Object hashing is compositional:
   1. Each property contributes an **entry hash** derived from the tuple `(objectId, propertyKey, valueHash)`.
   2. Entry hashes are combined through a commutative XOR fold, followed by a final avalanche mix to minimize collision bias.
-- `objectId` is a stable 64-bit random value assigned once per object to prevent cross-object collisions when identical key/value pairs appear in different objects.
+- `objectId` prevents cross-object collisions when identical key/value pairs appear in different objects.
 
 ### Entry Hash Formula
 ```
@@ -59,17 +56,18 @@ objectHash = finalize128(
 1. **Incremental O(1) Updates**: Storing per-key contribution hashes lets us avoid recomputing unaffected properties.
 2. **Stable Composition**: XOR folding with per-object salts keeps the hash order-independent while guarding against identical sub-structure collisions.
 3. **Consistent Snapshots**: With accurate metadata, consumers can treat `objectHash` as the canonical representation of the object's current structure.
-4. **Runtime Isolation**: Side-table metadata avoids polluting user-visible object shapes, keeping the mechanism transparent.
+4. **Deterministic Composition**: The algorithm depends only on well-defined inputs, keeping it independent from object iteration order or caller context.
 5. **Native-Friendly**: `xxHash3` is available in modern Node runtimes with high throughput and negligible startup cost.
 
 ## Maintenance Requirements
 
-- **Metadata Integrity**: Each managed object must expose `objectHash` and `keyEntries` entries that accurately reflect its enumerable structure at read time.
+- **Identifier Stability**: `objectId` must remain constant for the lifetime of the object.
+- **Key Normalization**: Property keys must be hashed canonically (case-sensitive strings, symbol descriptions) to avoid aliasing.
 - **Value Hash Fidelity**: Primitive hashing must be canonical (`-0` vs `0`, `NaN` normalization, bigint range bounds). For objects, read the child's `objectHash`; if unavailable, adopt before hashing.
-- **Garbage Safety**: Metadata is stored in `WeakMap` so that unreferenced objects can be collected without manual cleanup.
+- **Salt Quality**: `mixKey128` and any salts must retain avalanche properties to prevent structured collisions.
 - **Concurrency Discipline**: Any future shared-memory strategy must synchronize mutations to avoid torn updates of the XOR fold.
 - **Testing Matrix**: Include mutation stress tests (randomized operations) and collision-resistance property tests comparing to a baseline serializer hash.
-- **Observability**: Expose debug instrumentation (`Howard.__debugHash(object)`) to introspect entry hashes and salts during development.
+- **Observability**: Expose debug instrumentation (`Howard.__debugHash(object)`) to inspect intermediate entry hashes during development.
 
 ## Consequences
 
