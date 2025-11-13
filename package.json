@@ -38,10 +38,10 @@
     "test": "npm run check:test"
   },
   "peerDependencies": {
-    "@relational-fabric/canon": "^1.2.0"
+    "@relational-fabric/canon": ">=1.2.0"
   },
   "dependencies": {
-    "@relational-fabric/canon": "^1.2.0"
+    "@relational-fabric/canon": "git+https://github.com/RelationalFabric/canon.git#develop"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
@@ -49,6 +49,6 @@
     "npm-run-all": "^4.1.5",
     "tsx": "^4.20.6",
     "typescript": "^5.0.0",
-    "vitest": "^2.0.0"
+    "vitest": "^4.0.8"
   }
 }

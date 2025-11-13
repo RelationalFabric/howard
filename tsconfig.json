@@ -8,6 +8,10 @@
     },
     "skipLibCheck": true
   },
-  "include": ["src/**/*"],
+  "include": [
+    "src/**/*",
+    "node_modules/@relational-fabric/canon/types/**/*.d.ts",
+    "types/**/*.d.ts"
+  ],
   "exclude": ["node_modules", "dist", "examples"]
 }
