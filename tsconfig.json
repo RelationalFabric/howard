@@ -10,6 +10,7 @@
   },
   "include": [
     "src/**/*",
+    "benchmarks/**/*",
     "node_modules/@relational-fabric/canon/types/**/*.d.ts",
     "types/**/*.d.ts"
   ],

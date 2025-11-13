@@ -1,7 +1,7 @@
 # ADR 0005: Benchmarking Strategy
 
 ## Status
-Proposed
+Accepted
 
 ## Context
 - As Howard evolves into the invariant integrity primitive for Relational Fabric, performance regressions directly impact predicate dispatch latency and claim verification throughput.
@@ -13,13 +13,14 @@ Proposed
 ### Benchmarking Principles
 1. **Deterministic Harnesses:** Benchmarks must execute with fixed random seeds and clearly documented dataset generators to ensure reproducibility.
 2. **Representative Scenarios:** Suites should capture realistic object graph shapes, mutation patterns, and Canon axiom resolutions relevant to production workloads.
-3. **Continuous Tracking:** Results from main branch runs are stored to provide trend visibility; regressions trigger investigation before release.
+3. **Continuous Tracking:** Results from `main` and `develop` branch runs are stored to provide trend visibility; regressions trigger investigation before release. Each run appends a short-form narrative to a public summary in `docs/benchmarks`.
 
 ### Repository Layout
 - Create a top-level `benchmarks/` directory containing:
   - `benchmarks/harness/`: shared utilities, data generators, and Canon fixtures.
   - `benchmarks/suites/`: individual benchmark suites organized by feature area (e.g., hashing, integrity engine, naming).
-  - `benchmarks/results/`: machine-readable output (JSON or CSV) captured by CI for longitudinal comparison.
+  - `benchmarks/results/<branch>/`: machine-readable output (JSON or CSV) captured by CI for longitudinal comparison, namespaced by Git branch (currently `main` and `develop`).
+- Publish human-readable snapshots for each suite in `docs/benchmarks/`, aligning narrative summaries with the corresponding machine output.
 - Benchmarks are versioned alongside code so historical context is preserved with each revision.
 
 ### Tooling & Execution
@@ -34,8 +35,8 @@ Proposed
 ### CI Integration
 - Add a non-blocking CI job (`benchmarks`) that:
   1. Installs dependencies with `npm ci`.
-  2. Runs `npm run bench` with production build artifacts.
-  3. Publishes results to `benchmarks/results/latest.json`.
+  2. Runs `npm run bench -- --branch $BRANCH_NAME` with production build artifacts.
+  3. Publishes results to `benchmarks/results/$BRANCH_NAME/latest.json` and refreshes the matching narrative summary under `docs/benchmarks/`.
 - A follow-up alerting workflow compares `latest.json` with the previous baseline and posts findings to pull requests. Blocking behavior is deferred until confidence in variance thresholds is established.
 
 ### Governance
