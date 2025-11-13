@@ -23,7 +23,8 @@ Proposed
 - Benchmarks are versioned alongside code so historical context is preserved with each revision.
 
 ### Tooling & Execution
-- Use Node ≥ 20 and `vitest`’s built-in benchmark runner (`vitest bench`) augmented with high-resolution timers (`performance.now`).
+- Use Node ≥ 20 and `vitest`’s built-in benchmark runner (`vitest bench`).
+- Leverage Node’s `perf_hooks` module—specifically `performance.now()` for wall-clock measurement and `performance.timerify()` for function-level instrumentation—to capture sub-millisecond durations when authoring custom benchmark steps or setup/teardown hooks.
 - Suites must expose both CLI (`npm run bench`) and programmatic interfaces so CI and local workflows share identical execution paths.
 - Each suite documents minimum hardware expectations and how to run in isolation (`npm run bench -- --filter hashing`).
 
