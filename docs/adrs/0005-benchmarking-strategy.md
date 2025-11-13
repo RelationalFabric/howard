@@ -24,9 +24,12 @@ Proposed
 
 ### Tooling & Execution
 - Use Node ≥ 20 and `vitest`’s built-in benchmark runner (`vitest bench`).
-- Leverage Node’s `perf_hooks` module—specifically `performance.now()` for wall-clock measurement and `performance.timerify()` for function-level instrumentation—to capture sub-millisecond durations when authoring custom benchmark steps or setup/teardown hooks.
+- Vitest internally delegates to Tinybench, which reads `globalThis.performance`. In Node, set `globalThis.performance = require('node:perf_hooks').performance` via a benchmark setup file (e.g., `benchmarks/harness/setup.ts`) so every suite uses the high-resolution timer. Use `performance.timerify()` in custom helpers when finer attribution is required.
 - Suites must expose both CLI (`npm run bench`) and programmatic interfaces so CI and local workflows share identical execution paths.
 - Each suite documents minimum hardware expectations and how to run in isolation (`npm run bench -- --filter hashing`).
+- Support both cold and warm measurements:
+  - For **post-JIT** numbers, rely on Tinybench’s warmup configuration (`benchOptions: { warmupTime, warmupIterations }`) or explicit `task.warmup()` calls.
+  - For **pre-JIT** numbers, create companion tasks that disable warmup and execute a single measured iteration (`iterations: 1`, `warmupIterations: 0`), optionally isolating the test in a fresh worker to avoid cached bytecode.
 
 ### CI Integration
 - Add a non-blocking CI job (`benchmarks`) that:
