@@ -44,7 +44,7 @@ const appState = {
   currentUser: null as User | null,
 }
 
-const isUser = typeGuard<User>((value) => {
+const isUser = typeGuard<User>((value: unknown): value is User => {
   return (
     typeof value === 'object'
     && value !== null
@@ -112,7 +112,7 @@ if (import.meta.vitest) {
   })
 }
 
-const isEmpty: TypeGuard<unknown> = typeGuard((value) => {
+const isEmpty: TypeGuard<unknown> = typeGuard<unknown>((value: unknown): value is unknown => {
   if (Array.isArray(value))
     return value.length === 0
   if (typeof value === 'object' && value !== null)
@@ -122,7 +122,7 @@ const isEmpty: TypeGuard<unknown> = typeGuard((value) => {
 
 const { anEmpty: _anEmpty } = claims({ types: { isEmpty } })
 
-const hasCart = typeGuard<{ cart: unknown }>((value) => {
+const hasCart = typeGuard<{ cart: unknown }>((value: unknown): value is { cart: unknown } => {
   return typeof value === 'object' && value !== null && 'cart' in value
 })
 

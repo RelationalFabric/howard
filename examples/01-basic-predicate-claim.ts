@@ -42,7 +42,7 @@ import { claims } from '@relational-fabric/howard'
 // Empty values can be empty arrays, empty objects, or empty strings
 type EmptyValue = [] | Record<string, never> | ''
 
-const isEmpty = typeGuard<EmptyValue>((value) => {
+const isEmpty = typeGuard<EmptyValue>((value: unknown): value is EmptyValue => {
   if (Array.isArray(value)) {
     return value.length === 0
   }
