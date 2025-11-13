@@ -17,12 +17,18 @@ The hash is derived from immutable inputs supplied by the runtime:
 - `entries`: a finite map `{ propertyKey → valueHash }` covering every enumerable property (string or symbol key) with its canonical value hash.
 
 ### Hash Function
-Define `objectHash(objectId, entries)` as follows (all steps execute synchronously):
+Define two entry points that share the same composition logic:
+- `objectHashSync(objectId, entries) -> Hash128`
+- `objectHashAsync(objectId, entries) -> Promise<Hash128>`
+
+Both variants apply the identical steps:
 1. For each `(propertyKey, valueHash)` in `entries`, compute an **entry hash** using the tuple `(objectId, propertyKey, valueHash)`.
 2. Combine all entry hashes through a commutative XOR fold.
 3. Apply a final avalanche mix to the folded value to minimize collision bias.
 
-Base primitive hashing uses `xxHash3` 128-bit (exposed via a synchronous Node-API binding) for its trade-off between throughput and avalanche quality, and `objectId` prevents cross-object collisions when identical key/value pairs appear in different objects.
+`objectHashSync` executes entirely on the calling thread. `objectHashAsync` may offload the XOR fold and avalanche stages to a worker thread or native asynchronous binding but MUST resolve with the same result as the synchronous path.
+
+Base primitive hashing uses `xxHash3` 128-bit (exposed via synchronous or worker-backed Node-API bindings) for its trade-off between throughput and avalanche quality, and `objectId` prevents cross-object collisions when identical key/value pairs appear in different objects.
 
 ### Entry Hash Formula
 ```
@@ -58,7 +64,7 @@ objectHash = finalize128(
 2. **Stable Composition**: XOR folding with per-object salts keeps the hash order-independent while guarding against identical sub-structure collisions.
 3. **Consistent Snapshots**: With accurate metadata, consumers can treat `objectHash` as the canonical representation of the object's current structure.
 4. **Deterministic Composition**: The algorithm depends only on well-defined inputs, keeping it independent from object iteration order or caller context.
-5. **Native-Friendly**: `xxHash3` is available in modern Node runtimes as a synchronous binding with high throughput and negligible startup cost.
+5. **Native-Friendly**: `xxHash3` is available in modern Node runtimes through synchronous and worker-thread bindings with high throughput and negligible startup cost.
 
 ## Maintenance Requirements
 
@@ -68,7 +74,7 @@ objectHash = finalize128(
 - **Salt Quality**: `mixKey128` and any salts must retain avalanche properties to prevent structured collisions.
 - **Concurrency Discipline**: Any future shared-memory strategy must synchronize mutations to avoid torn updates of the XOR fold.
 - **Testing Matrix**: Include mutation stress tests (randomized operations) and collision-resistance property tests comparing to a baseline serializer hash.
-- **Synchronous Contract**: All hashing operations must remain synchronous, ensuring callers can use the hash during the same turn of the event loop.
+- **Execution Contract**: `objectHashSync` must remain fully synchronous; `objectHashAsync` must resolve deterministically with the same value and support cancellation-resistant execution.
 - **Observability**: Expose debug instrumentation (`Howard.__debugHash(object)`) to inspect intermediate entry hashes during development.
 
 ## Consequences
