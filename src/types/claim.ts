@@ -2,9 +2,8 @@
  * Claim type definitions
  */
 
-import type { Predicate, TypeGuard } from '@relational-fabric/canon'
+import type { Constructor, Predicate, TypeGuard } from '@relational-fabric/canon'
 import type { ConditionInterface } from './condition.js'
-import type { Constructor } from './utils.js'
 
 /**
  * A Claim is a first-class object representing a verifiable proposition.
