@@ -1,5 +1,5 @@
 import { bench, describe } from 'vitest'
-import { Claim } from '~/Claim.js'
+import { Claim } from '~/internals.js'
 
 const SAMPLE_SIZE = 5_000
 

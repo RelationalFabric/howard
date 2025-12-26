@@ -14,7 +14,8 @@
     "predicates"
   ],
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./internals": "./src/internals.ts"
   },
   "main": "./src/index.ts",
   "engines": {
