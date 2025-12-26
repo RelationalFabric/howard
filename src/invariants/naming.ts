@@ -5,7 +5,7 @@
  */
 
 import type { Expect } from '@relational-fabric/canon'
-import type { TransformGuardName, TransformPredicateName } from './naming.js'
+import type { TransformGuardName, TransformPredicateName } from '../types/naming.js'
 import { invariant } from '@relational-fabric/canon'
 
 // Predicate name transformations
