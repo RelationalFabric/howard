@@ -246,7 +246,7 @@ Here's the uncomfortable truth: **verifying a complex claim is computationally e
 
 But a logical world isn't free. The elegance of composable claims comes with a cost. I call this the **Logical Tax**—the computational overhead of proving complex propositions at runtime. Every composed claim, every nested property check, every conditional binding adds cycles. At scale, the tax becomes untenable.
 
-The next two articles in this series track Howard's evolution as we tackle exactly this: **Fast Value Hashing** to eliminate the Logical Tax, and **Object Metadata** to make proofs persist. The logical foundation is laid. Making it fast, and making it stick, is next.
+The next two articles in this series will track Howard's evolution as we build exactly this: **Fast Value Hashing** to eliminate the Logical Tax, and **Object Metadata** to make proofs persist. The logical foundation is laid. Making it fast, and making it stick, comes next.
 
 ---
 
