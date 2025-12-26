@@ -232,7 +232,9 @@ This is the **object metadata problem**. How do we make truths "stick" to data w
 
 ### Proofs as Persistent Annotations
 
-The answer lies in treating proofs as **persistent annotations**. When a claim is proven against an object, the proof becomes metadata attached to that object. Subsequent checks query this metadata rather than re-executing the predicate. If the object's content hasn't changed—verifiable via content-based hashing—the proof remains valid.
+The answer lies in treating proofs as **persistent annotations**. Once proven, a claim isn't just a result; it's a *certificate*. It travels with the data, ending the need for defensive re-interrogation at every boundary.
+
+When a claim is proven against an object, the proof becomes metadata attached to that object. Subsequent checks query this metadata rather than re-executing the predicate. If the object's content hasn't changed—verifiable via content-based hashing—the proof remains valid.
 
 This transforms claims from expensive runtime guards into cheap lookups. The first verification pays the cost. All subsequent queries benefit from the cached proof.
 
