@@ -23,7 +23,7 @@ Philip Greenspun once observed:
 
 > Any sufficiently complicated C or Fortran program contains an ad hoc, informally-specified, bug-ridden, slow implementation of half of Common Lisp.
 >
-> — Philip Greenspun
+> — [Philip Greenspun](https://en.wikipedia.org/wiki/Greenspun%27s_tenth_rule)
 
 The same principle applies to validation. Any sufficiently complex application contains an ad hoc, informally-specified, bug-ridden, slow implementation of half of a type system. We call this "defensive coding." The reality is less flattering: it's *semantic drift*.
 
@@ -76,7 +76,7 @@ This became known as the Curry-Howard correspondence, building on earlier work b
 
 > Rarely have photocopies had such an impact: the Curry-Howard correspondence started to resonate with the renewal of logics and the boom of computer science of the 1970s, then established itself in the 1980s as a deep structural connection between languages and logics, between programming and proving.
 >
-> — Xavier Leroy
+> — [Xavier Leroy, "From Curry-Howard to Certified Compilation"](https://xavierleroy.org/CdF/2018-2019/)
 
 The implication is direct: satisfying a type is the same as constructing a proof. When your program type-checks, you've provided a formal proof that it has certain properties. Your type system is a theorem prover in disguise.
 
