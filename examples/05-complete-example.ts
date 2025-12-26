@@ -48,7 +48,7 @@ interface AppState {
   currentUser: User | null
 }
 
-const isUser = typeGuard<User>((value) => {
+const isUser = typeGuard<User>((value: unknown): value is User => {
   return (
     typeof value === 'object'
     && value !== null
@@ -59,7 +59,7 @@ const isUser = typeGuard<User>((value) => {
   )
 })
 
-const hasCart = typeGuard<{ cart: Cart }>((value) => {
+const hasCart = typeGuard<{ cart: Cart }>((value: unknown): value is { cart: Cart } => {
   return (
     typeof value === 'object'
     && value !== null
@@ -68,7 +68,7 @@ const hasCart = typeGuard<{ cart: Cart }>((value) => {
   )
 })
 
-const isEmpty = typeGuard<unknown>((value) => {
+const isEmpty = typeGuard<unknown>((value: unknown): value is unknown => {
   if (Array.isArray(value))
     return value.length === 0
   if (typeof value === 'object' && value !== null)

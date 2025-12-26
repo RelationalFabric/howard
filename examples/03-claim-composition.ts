@@ -39,7 +39,7 @@ interface UserWithCart extends User {
 }
 
 // Using Canon's typeGuard helper to ensure proper type narrowing
-const isEmpty = typeGuard<unknown>((value) => {
+const isEmpty = typeGuard<unknown>((value: unknown): value is unknown => {
   if (Array.isArray(value))
     return value.length === 0
   if (typeof value === 'object' && value !== null)
@@ -47,7 +47,7 @@ const isEmpty = typeGuard<unknown>((value) => {
   return false
 })
 
-const isUser = typeGuard<User>((value) => {
+const isUser = typeGuard<User>((value: unknown): value is User => {
   return (
     typeof value === 'object'
     && value !== null
@@ -56,7 +56,7 @@ const isUser = typeGuard<User>((value) => {
   )
 })
 
-const hasCart = typeGuard<UserWithCart>((value) => {
+const hasCart = typeGuard<UserWithCart>((value: unknown): value is UserWithCart => {
   return (
     isUser(value)
     && 'cart' in value
@@ -130,7 +130,7 @@ interface Admin {
   permissions: string[]
 }
 
-const isAdmin = typeGuard<Admin>((value) => {
+const isAdmin = typeGuard<Admin>((value: unknown): value is Admin => {
   return (
     typeof value === 'object'
     && value !== null
@@ -174,13 +174,13 @@ interface UserWithName extends User {
   name: string
 }
 
-const hasName = typeGuard<UserWithName>((value) => {
+const hasName = typeGuard<UserWithName>((value: unknown): value is UserWithName => {
   return isUser(value) && 'name' in value && typeof (value as UserWithName).name === 'string'
 })
 
-const isEmptyString = typeGuard<string>((value) => {
-  return typeof value === 'string' && value.length === 0
-})
+const isEmptyString = typeGuard<string>(
+  (value: unknown): value is string => typeof value === 'string' && value.length === 0,
+)
 
 const { HasName, anEmptyString } = claims({
   types: { hasName, isEmptyString },

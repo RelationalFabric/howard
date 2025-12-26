@@ -57,7 +57,7 @@ interface HasCart {
   cart?: Cart
 }
 
-const isUser = typeGuard<User>((value) => {
+const isUser = typeGuard<User>((value: unknown): value is User => {
   return (
     typeof value === 'object'
     && value !== null
@@ -68,7 +68,7 @@ const isUser = typeGuard<User>((value) => {
   )
 })
 
-const hasCart = typeGuard<HasCart>((value) => {
+const hasCart = typeGuard<HasCart>((value: unknown): value is HasCart => {
   return (
     typeof value === 'object'
     && value !== null
@@ -144,7 +144,7 @@ naming convention to use based on your preference:
 */
 
 // ```
-const isAdmin = typeGuard<User>((value) => {
+const isAdmin = typeGuard<User>((value: unknown): value is User => {
   return typeof value === 'object' && value !== null && 'id' in value
 })
 
