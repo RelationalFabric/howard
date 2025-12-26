@@ -45,8 +45,7 @@
     "@relational-fabric/canon": ">=1.2.0"
   },
   "dependencies": {
-    "@relational-fabric/canon": ">=1.2.0",
-    "canon": "^0.4.1",
+    "@relational-fabric/canon": "github:RelationalFabric/canon#develop",
     "husky": "^9.1.7"
   },
   "devDependencies": {

@@ -11,8 +11,7 @@ import type { ConditionInterface } from './condition.js'
  *
  * Uses `any[]` for args to match TypeScript's built-in ConstructorParameters.
  */
-// eslint-disable-next-line ts/no-explicit-any -- Required to match TypeScript's constructor inference
-export type Constructor<T = unknown> = new (...args: any[]) => T
+export type Constructor<T = unknown> = new (...args: never[]) => T
 
 /**
  * A Claim is a first-class object representing a verifiable proposition.
