@@ -117,13 +117,15 @@ The difference is subtle but transformative. In the first model, you're a gateke
 
 This shift changes how you design APIs, structure modules, and reason about data flow. Functions stop asking "is this valid?" and start asking "what has been proven about this?" The defensive crouch relaxes into confident composition.
 
+The economics are stark: in an infrastructure of suspicion, you pay for the same check a thousand times across a thousand services. In a claim-based architecture, you pay for the proof once. The result is a massive reduction in the semantic noise that clogs modern distributed systems.
+
 ---
 
 ## Howard: Claims as First-Class Citizens
 
 Howard is named after William Alvin Howard. It embodies the correspondence he helped formalise, making it practical for runtime logic.
 
-(A note on nomenclature: Haskell Curry achieved immortality in programming vernacular twice over—once as a language, once as a verb. We curry functions without a second thought. Howard, despite contributing equally to one of computer science's most profound insights, received no such honour. There is no "to howard" in our lexicon. This library is a small corrective.)
+(A note on nomenclature: Haskell Curry achieved immortality in programming vernacular twice over—once as a language, once as a verb. We curry functions without a second thought. Howard, despite contributing equally to one of computer science's most profound insights, received no such honour. There is no "to howard" in our lexicon. This engine is a small corrective.)
 
 The architecture is deliberately minimal:
 
@@ -257,7 +259,7 @@ The goal is a software ecosystem where:
 - Data carries verifiable claims about its own correctness
 - Business logic operates on proven propositions, not hopeful assumptions
 - The gap between "what the type says" and "what the data is" closes to zero
-- Re-verification becomes unnecessary, not because we trust blindly, but because proofs persist
+- Re-verification becomes unnecessary, not because we trust blindly, but because proofs persist—and once we solve the **Logical Tax**, constructing those proofs becomes virtually zero-cost
 
 This is **semantic integrity**: a state where the meaning of your data is explicitly represented, rigorously verified, and structurally enforced.
 
