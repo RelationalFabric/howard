@@ -244,11 +244,15 @@ But this pattern requires infrastructure: content-based hashing, metadata attach
 
 Here's the uncomfortable truth: **verifying a complex claim is computationally expensive**. A claim like `AQualifiedLead` might involve database lookups, date comparisons, and nested property traversals. Running it on every function boundary is a tax your system pays continuously.
 
-But a logical world isn't free. The elegance of composable claims comes with a cost—until you solve the caching problem.
+But a logical world isn't free. The elegance of composable claims comes with a cost. I call this the **Logical Tax**—the computational overhead of proving complex propositions at runtime. Every composed claim, every nested property check, every conditional binding adds cycles. At scale, the tax becomes untenable.
 
-In the next article in this series, I'll reveal how we use **Fast Value Hashing** to make these proofs virtually zero-cost. The technique lets us detect when an object's content has changed in near-constant time, enabling Howard to perform at the scale of millions of operations per second. We'll explore how content-based addressing turns expensive runtime checks into instant metadata lookups.
+This is where the next two articles in this series come in.
 
-Howard solves the *logical* problem. The performance problem—how to make that logic persist efficiently—is the next frontier.
+**Article 2: Zero-Cost Logic.** I'll reveal how **Fast Value Hashing** eliminates the Logical Tax entirely. The technique lets us detect when an object's content has changed in near-constant time, enabling Howard to perform at the scale of millions of operations per second. Content-based addressing turns expensive runtime checks into instant cache lookups.
+
+**Article 3: Object Metadata.** Once we can hash objects cheaply, we can attach proofs as persistent metadata. I'll show how claims become certificates that travel with your data—ending the defensive re-interrogation that plagues conventional architectures.
+
+Howard solves the *logical* problem. The next frontier is making that logic fast, and then making it stick.
 
 ---
 
