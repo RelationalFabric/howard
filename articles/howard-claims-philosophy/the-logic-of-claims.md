@@ -92,6 +92,8 @@ That's what Howard is for.
 
 Howard is named after William Alvin Howard. It embodies the correspondence he helped formalise, making it practical for runtime logic.
 
+(A note on nomenclature: Haskell Curry achieved immortality in programming vernacular twice over—once as a language, once as a verb. We curry functions without a second thought. Howard, despite contributing equally to one of computer science's most profound insights, received no such honour. There is no "to howard" in our lexicon. This library is a small corrective.)
+
 The architecture is deliberately minimal:
 
 ### The Core Primitives
