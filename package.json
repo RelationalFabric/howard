@@ -43,6 +43,7 @@
   },
   "dependencies": {
     "@relational-fabric/canon": ">=1.2.0",
+    "canon": "^0.4.1",
     "husky": "^9.1.7"
   },
   "devDependencies": {
