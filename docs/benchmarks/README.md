@@ -1,20 +1,47 @@
-# Benchmark Summaries
+# Benchmark Documentation
 
-This directory tracks human-readable summaries for Howard's benchmark suites. Machine-readable outputs live under `benchmarks/results/<branch>/latest.json` and mirror the branch that produced them (`main`, `develop`, or feature branches). Each suite maintains its own markdown report that explains the scenario, highlights the latest numbers, and calls out risks or follow-up actions.
+This directory tracks benchmark documentation for Howard's performance suites.
 
-## How to record benchmarks
+## Reports
 
-- Run all suites locally: `npm run bench`
-- Record results for a specific branch (updates both JSON and docs):
-  - `npm run bench:record -- --branch develop`
-  - `npm run bench:record -- --branch main`
-- The helper script auto-detects the current Git branch when no `--branch` flag is provided.
+- **[comparison.md](./comparison.md)** - Comparative report between `main` and `develop` branches (auto-generated)
+- **[claim-performance.md](./claim-performance.md)** - Detailed documentation of the Claim performance benchmark suite
 
-## Adding new suites
+## Data Storage
 
-1. Create the benchmark in `benchmarks/suites/`.
-2. Document the data generators and control knobs in `benchmarks/harness/`.
-3. Capture a summary markdown file in `docs/benchmarks/`.
-4. Update or create baselines for `main` and `develop` via `npm run bench:record`.
+Machine-readable outputs live under `benchmarks/results/<branch>/latest.json` and mirror the branch that produced them (`main`, `develop`, or feature branches).
 
-See `claim-performance.md` for an example format.
+## Commands
+
+| Command | Description |
+| :--- | :--- |
+| `npm run bench` | Run benchmarks interactively (results not saved) |
+| `npm run bench:record` | Record benchmarks for current branch and regenerate comparison report |
+| `npm run bench:record -- --branch main` | Record benchmarks explicitly for `main` branch |
+| `npm run bench:record -- --branch develop` | Record benchmarks explicitly for `develop` branch |
+| `npm run bench:report` | Regenerate comparison report from existing JSON results |
+
+## Workflow
+
+### Recording Baseline Results
+
+```bash
+# Record main branch baseline
+git checkout main
+npm run bench:record -- --branch main
+
+# Record develop branch baseline
+git checkout develop
+npm run bench:record -- --branch develop
+```
+
+The `bench:record` command automatically regenerates the [comparison report](./comparison.md) after recording.
+
+### Adding New Benchmark Suites
+
+1. Create the benchmark in `benchmarks/suites/` (e.g., `my-feature.bench.ts`)
+2. Document data generators and control knobs in the suite file
+3. Add a detailed documentation file in `docs/benchmarks/` (e.g., `my-feature.md`)
+4. Record baselines for both branches
+
+See [claim-performance.md](./claim-performance.md) for an example format.

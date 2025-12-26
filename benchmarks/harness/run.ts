@@ -57,13 +57,7 @@ function buildVitestCommand(outputFile: string): SpawnOptions {
   }
 }
 
-async function run(): Promise<void> {
-  const branch = sanitizeBranchName(getBranchName())
-  const outputDirectory = path.resolve('benchmarks', 'results', branch)
-  const outputFile = path.resolve(outputDirectory, 'latest.json')
-
-  await mkdir(outputDirectory, { recursive: true })
-
+async function runBenchmarks(branch: string, outputFile: string): Promise<void> {
   const { command, args } = buildVitestCommand(outputFile)
 
   await new Promise<void>((resolve, reject) => {
@@ -88,6 +82,45 @@ async function run(): Promise<void> {
       }
     })
   })
+}
+
+async function generateReport(): Promise<void> {
+  console.log('\n📊 Generating benchmark comparison report...')
+
+  await new Promise<void>((resolve, reject) => {
+    const reportScript = path.resolve('benchmarks', 'harness', 'generate-report.ts')
+    const child = spawn(process.execPath, ['--import', 'tsx', reportScript], {
+      stdio: 'inherit',
+    })
+
+    child.on('error', (error) => {
+      reject(error)
+    })
+
+    child.on('exit', (code) => {
+      if (code === 0) {
+        resolve()
+      } else {
+        reject(new Error(`Report generation exited with code ${code}`))
+      }
+    })
+  })
+}
+
+async function run(): Promise<void> {
+  const branch = sanitizeBranchName(getBranchName())
+  const outputDirectory = path.resolve('benchmarks', 'results', branch)
+  const outputFile = path.resolve(outputDirectory, 'latest.json')
+
+  console.log(`📈 Recording benchmarks for branch: ${branch}`)
+
+  await mkdir(outputDirectory, { recursive: true })
+  await runBenchmarks(branch, outputFile)
+
+  console.log(`\n✅ Results saved to: ${outputFile}`)
+
+  // Regenerate comparison report after recording
+  await generateReport()
 }
 
 run().catch((error) => {

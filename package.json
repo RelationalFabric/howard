@@ -39,7 +39,8 @@
     "dev": "tsx --watch src/index.ts",
     "test": "npm run check:test",
     "bench": "vitest bench",
-    "bench:record": "tsx benchmarks/harness/run.ts"
+    "bench:record": "tsx benchmarks/harness/run.ts",
+    "bench:report": "tsx benchmarks/harness/generate-report.ts"
   },
   "peerDependencies": {
     "@relational-fabric/canon": ">=1.2.0"
