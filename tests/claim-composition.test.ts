@@ -3,11 +3,8 @@
  */
 
 import { typeGuard } from '@relational-fabric/canon'
+import { Claim, ClaimAnd, ClaimOn, ClaimOr } from '@relational-fabric/howard'
 import { describe, expect, it } from 'vitest'
-import Claim from '~/Claim.js'
-import ClaimAnd from '~/claim/And.js'
-import ClaimOn from '~/claim/On.js'
-import ClaimOr from '~/claim/Or.js'
 
 describe('and', () => {
   it('performs logical AND of two claims', () => {

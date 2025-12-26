@@ -5,9 +5,7 @@
 import type { Predicate } from '@relational-fabric/canon'
 import type { ClaimInterface, ConditionInterface } from './types/index.js'
 import { typeGuard } from '@relational-fabric/canon'
-import ClaimAnd from './claim/And.js'
-import ClaimOn from './claim/On.js'
-import ClaimOr from './claim/Or.js'
+import { ClaimAnd, ClaimOn, ClaimOr } from './Claim/combinators.js'
 import ConditionClass from './Condition.js'
 
 /**
