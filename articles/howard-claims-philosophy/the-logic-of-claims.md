@@ -181,11 +181,35 @@ const AQualifiedLead = AnActiveCustomer.and(HasRecentEngagement)
 const AQualifiedLeadWithHighValue = AQualifiedLead.on('subscription', HasHighLifetimeValue)
 ```
 
+Notice what's happening here: the `QualifiedLead` claim doesn't just check a single object—it establishes a *relational state* across multiple concerns. The user's identity, their email verification status, their subscription state, and their engagement history are woven into a single verifiable proposition.
+
 This isn't just validation with better syntax. It's a **fabric of knowledge**—a graph where each node is a proposition and each edge is a logical relationship.
 
 Picture it: `aUser` sits at the foundation. `HasVerifiedEmail` and `HasActiveSubscription` branch from it. `AQualifiedLead` sits at the intersection, representing the conjunction of all three. When you prove `AQualifiedLead`, you've simultaneously proven every claim in its ancestry.
 
 The proof propagates. The semantics compound. The knowledge accumulates.
+
+### When Proofs Fail: Debugging Gold
+
+Here's where Howard pays dividends that ad-hoc validation never can.
+
+In traditional code, when a complex validation fails, you get `false`. That's it. You're left to trace through nested conditionals, console-logging your way to the offending check. The more complex the validation, the more opaque the failure.
+
+In Howard, when a claim fails, you get a **Proof**—an immutable record of the entire evaluation. The proof contains not just the result, but the *reasoning*:
+
+```typescript
+const proof = prove(AQualifiedLead, suspectUser)
+
+if (!proof.result) {
+  console.log(proof.explanation.human())
+  // "AQualifiedLead failed: HasRecentEngagement returned false
+  //  (last engagement: 47 days ago, threshold: 30 days)"
+}
+```
+
+The proof traces back through the composition graph, pinpointing exactly which atomic claim failed and why. For a claim like `AQualifiedLead` that composes four distinct predicates, this is the difference between "it didn't work" and "the user's last engagement was 47 days ago, which exceeds the 30-day threshold."
+
+This is the debugging experience that senior engineers dream of: failures that explain themselves.
 
 In a traditional codebase, these relationships are implicit—scattered across conditionals, hidden in control flow. In a Howard-based system, they're explicit—declared, composed, and verifiable.
 
@@ -218,7 +242,9 @@ But this pattern requires infrastructure: content-based hashing, metadata attach
 
 Here's the uncomfortable truth: **verifying a complex claim is computationally expensive**. A claim like `AQualifiedLead` might involve database lookups, date comparisons, and nested property traversals. Running it on every function boundary is a tax your system pays continuously.
 
-In my next piece, I'll show how we use **Fast Value Hashing** to make these proofs instant and zero-cost. The technique lets us detect when an object's content has changed in near-constant time, making proof caching not just possible but practical at scale.
+But a logical world isn't free. The elegance of composable claims comes with a cost—until you solve the caching problem.
+
+In the next article in this series, I'll reveal how we use **Fast Value Hashing** to make these proofs virtually zero-cost. The technique lets us detect when an object's content has changed in near-constant time, enabling Howard to perform at the scale of millions of operations per second. We'll explore how content-based addressing turns expensive runtime checks into instant metadata lookups.
 
 Howard solves the *logical* problem. The performance problem—how to make that logic persist efficiently—is the next frontier.
 
