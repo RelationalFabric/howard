@@ -52,6 +52,13 @@ Results are automatically updated when benchmarks are recorded for either branch
 
 ## How to Update
 
+### Automatic (CI)
+
+Benchmarks run automatically when changes are pushed to `main` or `develop`.
+Results are submitted via PR from `bench/*` branches to `develop`.
+
+### Manual (Local)
+
 ```bash
 # Record benchmarks for main branch
 git checkout main
@@ -61,7 +68,7 @@ npm run bench:record -- --branch main
 git checkout develop
 npm run bench:record -- --branch develop
 
-# Regenerate this report
+# Regenerate this report only
 npm run bench:report
 ```
 
@@ -70,4 +77,4 @@ npm run bench:report
 - All measurements in operations per second (higher is better)
 - RME = Relative Margin of Error (lower is more stable)
 - p99 = 99th percentile latency
-- Benchmarks run with Node.js on the CI environment
+- Results updated via `bench/*` branches → PR to `develop`
