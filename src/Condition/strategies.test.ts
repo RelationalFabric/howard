@@ -4,9 +4,9 @@
 
 import { typeGuard } from '@relational-fabric/canon'
 import { describe, expect, it } from 'vitest'
-import Claim from '../Claim.js'
-import ConditionEager from './Eager.js'
-import ConditionLazy from './Lazy.js'
+import { Claim } from '../Claim.js'
+import { ConditionEager } from './Eager.js'
+import { ConditionLazy } from './Lazy.js'
 
 describe('eager', () => {
   it('evaluates immediately when called', () => {

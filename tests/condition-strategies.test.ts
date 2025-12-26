@@ -3,20 +3,20 @@
  */
 
 import { typeGuard } from '@relational-fabric/canon'
+import { claims } from '@relational-fabric/howard'
 import { describe, expect, it } from 'vitest'
-import Claim from '~/Claim.js'
-import ConditionEager from '~/Condition/Eager.js'
-import ConditionLazy from '~/Condition/Lazy.js'
 
 describe('eager', () => {
   it('evaluates immediately when called', () => {
     const isPositive = typeGuard<number>((value: unknown) => {
       return typeof value === 'number' && value > 0
     })
-    const claim = new Claim(isPositive)
+    const { IsPositive } = claims({
+      relations: { isPositive },
+    })
 
     let state = 5
-    const eager = new ConditionEager(claim, () => state).toConditional()
+    const eager = IsPositive.given(() => state).eager()
 
     expect(eager()).toBe(true)
 
@@ -32,11 +32,15 @@ describe('eager', () => {
       return typeof value === 'number' && value % 2 === 0
     })
 
-    const claim1 = new Claim(isPositive)
-    const claim2 = new Claim(isEven)
+    const { IsPositive } = claims({
+      relations: { isPositive },
+    })
+    const { IsEven } = claims({
+      relations: { isEven },
+    })
 
     let state = 4
-    const eager = new ConditionEager(claim1, () => state).toConditional().and(claim2)
+    const eager = IsPositive.given(() => state).eager().and(IsEven)
 
     expect(eager()).toBe(true) // 4 is positive and even
 
@@ -50,11 +54,15 @@ describe('eager', () => {
       return typeof value === 'number' && value > 0
     })
 
-    const claim1 = new Claim(isZero)
-    const claim2 = new Claim(isPositive)
+    const { IsZero } = claims({
+      relations: { isZero },
+    })
+    const { IsPositive } = claims({
+      relations: { isPositive },
+    })
 
     let state = 0
-    const eager = new ConditionEager(claim1, () => state).toConditional().or(claim2)
+    const eager = IsZero.given(() => state).eager().or(IsPositive)
 
     expect(eager()).toBe(true) // 0 is zero
 
@@ -71,10 +79,12 @@ describe('lazy', () => {
     const isPositive = typeGuard<number>((value: unknown) => {
       return typeof value === 'number' && value > 0
     })
-    const claim = new Claim(isPositive)
+    const { IsPositive } = claims({
+      relations: { isPositive },
+    })
 
     let state = 5
-    const lazy = new ConditionLazy(claim, () => state).toConditional()
+    const lazy = IsPositive.given(() => state).lazy()
 
     expect(lazy()).toBe(true)
 
@@ -90,11 +100,15 @@ describe('lazy', () => {
       return typeof value === 'number' && value % 2 === 0
     })
 
-    const claim1 = new Claim(isPositive)
-    const claim2 = new Claim(isEven)
+    const { IsPositive } = claims({
+      relations: { isPositive },
+    })
+    const { IsEven } = claims({
+      relations: { isEven },
+    })
 
     let state = 4
-    const lazy = new ConditionLazy(claim1, () => state).toConditional().and(claim2)
+    const lazy = IsPositive.given(() => state).lazy().and(IsEven)
 
     expect(lazy()).toBe(true) // 4 is positive and even
 
@@ -108,11 +122,15 @@ describe('lazy', () => {
       return typeof value === 'number' && value > 0
     })
 
-    const claim1 = new Claim(isZero)
-    const claim2 = new Claim(isPositive)
+    const { IsZero } = claims({
+      relations: { isZero },
+    })
+    const { IsPositive } = claims({
+      relations: { isPositive },
+    })
 
     let state = 0
-    const lazy = new ConditionLazy(claim1, () => state).toConditional().or(claim2)
+    const lazy = IsZero.given(() => state).lazy().or(IsPositive)
 
     expect(lazy()).toBe(true) // 0 is zero
 

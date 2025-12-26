@@ -18,34 +18,34 @@ class Product {
 
 // ClaimsInput should accept relations (predicates)
 interface RelationInput { relations: { isEmpty: Predicate<unknown> } }
-void invariant<Expect<RelationInput, ClaimsInput>>()
+invariant<Expect<RelationInput, ClaimsInput>>()
 
 // ClaimsInput should accept types (guards)
 interface TypeInput { types: { isUser: TypeGuard<User> } }
-void invariant<Expect<TypeInput, ClaimsInput>>()
+invariant<Expect<TypeInput, ClaimsInput>>()
 
 // ClaimsInput should accept both
 interface MixedInput {
   relations: { isEmpty: Predicate<unknown> }
   types: { isUser: TypeGuard<User> }
 }
-void invariant<Expect<MixedInput, ClaimsInput>>()
+invariant<Expect<MixedInput, ClaimsInput>>()
 
 // ClaimsResult should transform relation names
 type RelationResult = ClaimsResult<{ relations: { isEmpty: Predicate<string> } }>
-void invariant<Expect<'IsEmpty' extends keyof RelationResult ? true : false, true>>()
+invariant<Expect<'IsEmpty' extends keyof RelationResult ? true : false, true>>()
 
 // ClaimsResult should transform type guard names
 type TypeResult = ClaimsResult<{ types: { isUser: TypeGuard<User> } }>
-void invariant<Expect<'aUser' extends keyof TypeResult ? true : false, true>>()
+invariant<Expect<'aUser' extends keyof TypeResult ? true : false, true>>()
 
 // ClaimsResult values should preserve actual types from TypeGuards
 type UserClaimResult = ClaimsResult<{ types: { isUser: TypeGuard<User> } }>['aUser']
-void invariant<Expect<UserClaimResult, ClaimInterface<User>>>()
+invariant<Expect<UserClaimResult, ClaimInterface<User>>>()
 
 // ClaimsResult values should preserve actual types from Predicates
 type StringClaimResult = ClaimsResult<{ relations: { isEmpty: Predicate<string> } }>['IsEmpty']
-void invariant<Expect<StringClaimResult, ClaimInterface<string>>>()
+invariant<Expect<StringClaimResult, ClaimInterface<string>>>()
 
 // ClaimsResult should handle mixed inputs with preserved types
 type MixedResult = ClaimsResult<{
@@ -53,22 +53,22 @@ type MixedResult = ClaimsResult<{
   types: { isUser: TypeGuard<User>, hasCart: TypeGuard<Cart> }
 }>
 type MixedKeys = keyof MixedResult
-void invariant<Expect<'IsEmpty' extends MixedKeys ? true : false, true>>()
-void invariant<Expect<'HasValue' extends MixedKeys ? true : false, true>>()
-void invariant<Expect<'aUser' extends MixedKeys ? true : false, true>>()
-void invariant<Expect<'HasCart' extends MixedKeys ? true : false, true>>()
+invariant<Expect<'IsEmpty' extends MixedKeys ? true : false, true>>()
+invariant<Expect<'HasValue' extends MixedKeys ? true : false, true>>()
+invariant<Expect<'aUser' extends MixedKeys ? true : false, true>>()
+invariant<Expect<'HasCart' extends MixedKeys ? true : false, true>>()
 
 // Verify types are preserved in mixed result
-void invariant<Expect<MixedResult['IsEmpty'], ClaimInterface<string>>>()
-void invariant<Expect<MixedResult['HasValue'], ClaimInterface<number>>>()
-void invariant<Expect<MixedResult['aUser'], ClaimInterface<User>>>()
-void invariant<Expect<MixedResult['HasCart'], ClaimInterface<Cart>>>()
+invariant<Expect<MixedResult['IsEmpty'], ClaimInterface<string>>>()
+invariant<Expect<MixedResult['HasValue'], ClaimInterface<number>>>()
+invariant<Expect<MixedResult['aUser'], ClaimInterface<User>>>()
+invariant<Expect<MixedResult['HasCart'], ClaimInterface<Cart>>>()
 
 // Empty input should produce empty result
 type EmptyResult = ClaimsResult<Record<string, never>>
-void invariant<Expect<keyof EmptyResult, never>>()
+invariant<Expect<keyof EmptyResult, never>>()
 
 // ClaimFor should handle constructor types (classes)
 type ProductConstructor = typeof Product
 type ProductClaim = ClaimFor<ProductConstructor>
-void invariant<Expect<ProductClaim, ClaimInterface<Product>>>()
+invariant<Expect<ProductClaim, ClaimInterface<Product>>>()

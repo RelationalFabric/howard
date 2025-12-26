@@ -4,7 +4,7 @@
 
 import { typeGuard } from '@relational-fabric/canon'
 import { describe, expect, it } from 'vitest'
-import Claim from './Claim.js'
+import { Claim } from './Claim.js'
 
 describe('claim', () => {
   describe('check()', () => {

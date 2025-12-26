@@ -3,7 +3,7 @@
  */
 
 import type { ClaimInterface, ClaimsInput, ClaimsResult } from './types/index.js'
-import ClaimClass from './Claim.js'
+import { Claim } from './Claim.js'
 import { nameForGuard, nameForPredicate } from './naming/index.js'
 
 /**
@@ -20,14 +20,14 @@ export function claims<T extends ClaimsInput>(input: T): ClaimsResult<T> {
   if (input.relations) {
     for (const [name, predicate] of Object.entries(input.relations)) {
       const claimName = nameForPredicate(name)
-      result[claimName] = new ClaimClass(predicate)
+      result[claimName] = new Claim(predicate)
     }
   }
 
   if (input.types) {
     for (const [name, guard] of Object.entries(input.types)) {
       const claimName = nameForGuard(name)
-      result[claimName] = new ClaimClass(guard)
+      result[claimName] = new Claim(guard)
     }
   }
 

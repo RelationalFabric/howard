@@ -9,7 +9,7 @@ import type { ClaimInterface, ConditionalInterface, ReferenceFn } from '../types
  *
  * Fetches the value from the reference before checking each time.
  */
-export default class ConditionEager<T> {
+export class ConditionEager<T> {
   constructor(
     private readonly claim: ClaimInterface<T>,
     private readonly ref: ReferenceFn<unknown>,

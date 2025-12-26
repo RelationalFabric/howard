@@ -9,7 +9,7 @@ import type { ClaimInterface, ConditionalInterface, ReferenceFn } from '../types
  *
  * Only checks when called, assumes value is already available.
  */
-export default class ConditionLazy<T> {
+export class ConditionLazy<T> {
   constructor(
     private readonly claim: ClaimInterface<T>,
     private readonly ref: ReferenceFn<unknown>,

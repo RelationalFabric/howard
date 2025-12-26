@@ -3,7 +3,7 @@
  */
 
 import { typeGuard } from '@relational-fabric/canon'
-import { Claim, ClaimAnd, ClaimOn, ClaimOr } from '@relational-fabric/howard'
+import { claims } from '@relational-fabric/howard'
 import { describe, expect, it } from 'vitest'
 
 describe('and', () => {
@@ -15,9 +15,13 @@ describe('and', () => {
       return typeof value === 'number' && value % 2 === 0
     })
 
-    const claim1 = new Claim(isPositive)
-    const claim2 = new Claim(isEven)
-    const andClaim = new ClaimAnd(claim1, claim2)
+    const { IsPositive } = claims({
+      relations: { isPositive },
+    })
+    const { IsEven } = claims({
+      relations: { isEven },
+    })
+    const andClaim = IsPositive.and(IsEven)
 
     expect(andClaim.check(4)).toBe(true)
     expect(andClaim.check(3)).toBe(false)
@@ -36,10 +40,16 @@ describe('and', () => {
       return typeof value === 'number' && value < 10
     })
 
-    const claim1 = new Claim(isPositive)
-    const claim2 = new Claim(isEven)
-    const claim3 = new Claim(isLessThan10)
-    const composed = claim1.and(claim2).and(claim3)
+    const { IsPositive } = claims({
+      relations: { isPositive },
+    })
+    const { IsEven } = claims({
+      relations: { isEven },
+    })
+    const { IsLessThan10 } = claims({
+      relations: { isLessThan10 },
+    })
+    const composed = IsPositive.and(IsEven).and(IsLessThan10)
 
     expect(composed.check(4)).toBe(true)
     expect(composed.check(12)).toBe(false)
@@ -55,9 +65,13 @@ describe('or', () => {
       return value === 0
     })
 
-    const claim1 = new Claim(isPositive)
-    const claim2 = new Claim(isZero)
-    const orClaim = new ClaimOr(claim1, claim2)
+    const { IsPositive } = claims({
+      relations: { isPositive },
+    })
+    const { IsZero } = claims({
+      relations: { isZero },
+    })
+    const orClaim = IsPositive.or(IsZero)
 
     expect(orClaim.check(5)).toBe(true)
     expect(orClaim.check(0)).toBe(true)
@@ -69,10 +83,16 @@ describe('or', () => {
     const isOne = typeGuard<number>((value: unknown) => value === 1)
     const isTwo = typeGuard<number>((value: unknown) => value === 2)
 
-    const claim1 = new Claim(isZero)
-    const claim2 = new Claim(isOne)
-    const claim3 = new Claim(isTwo)
-    const composed = claim1.or(claim2).or(claim3)
+    const { IsZero } = claims({
+      relations: { isZero },
+    })
+    const { IsOne } = claims({
+      relations: { isOne },
+    })
+    const { IsTwo } = claims({
+      relations: { isTwo },
+    })
+    const composed = IsZero.or(IsOne).or(IsTwo)
 
     expect(composed.check(0)).toBe(true)
     expect(composed.check(1)).toBe(true)
@@ -99,9 +119,13 @@ describe('on', () => {
       return typeof value === 'number' && value >= 18
     })
 
-    const personClaim = new Claim<Person>(isPerson)
-    const adultClaim = new Claim<number>(isAdult)
-    const onClaim = new ClaimOn<Person, 'age'>(personClaim, 'age', adultClaim)
+    const { aPerson } = claims({
+      types: { isPerson },
+    })
+    const { anAdult } = claims({
+      types: { isAdult },
+    })
+    const onClaim = aPerson.on('age', anAdult)
 
     expect(onClaim.check({ name: 'Alice', age: 25 })).toBe(true)
     expect(onClaim.check({ name: 'Bob', age: 15 })).toBe(false)
@@ -125,9 +149,13 @@ describe('on', () => {
       return typeof value === 'number' && value >= 18
     })
 
-    const personClaim = new Claim<Person>(isPerson)
-    const adultClaim = new Claim<number>(isAdult)
-    const onClaim = new ClaimOn<Person, 'age'>(personClaim, 'age', adultClaim)
+    const { aPerson } = claims({
+      types: { isPerson },
+    })
+    const { anAdult } = claims({
+      types: { isAdult },
+    })
+    const onClaim = aPerson.on('age', anAdult)
 
     expect(onClaim.check({ invalid: 'object' })).toBe(false)
     expect(onClaim.check(null)).toBe(false)
@@ -154,9 +182,13 @@ describe('on', () => {
       return typeof value === 'string' && value.length > 0
     })
 
-    const personClaim = new Claim<Person>(isPerson)
-    const nonEmptyClaim = new Claim<string>(isNonEmpty)
-    const composed = personClaim.on('name', nonEmptyClaim)
+    const { aPerson } = claims({
+      types: { isPerson },
+    })
+    const { IsNonEmpty } = claims({
+      relations: { isNonEmpty },
+    })
+    const composed = aPerson.on('name', IsNonEmpty)
 
     expect(composed.check({ name: 'Alice', address: { street: '123 Main', city: 'NYC' } })).toBe(true)
     expect(composed.check({ name: '', address: { street: '123 Main', city: 'NYC' } })).toBe(false)

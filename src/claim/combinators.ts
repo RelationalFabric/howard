@@ -4,7 +4,7 @@
 
 import type { ClaimInterface, ConditionInterface } from '../types/index.js'
 import { typeGuard } from '@relational-fabric/canon'
-import ConditionClass from '../Condition.js'
+import { Condition } from '../Condition.js'
 
 /**
  * ClaimOn class represents checking a nested property with a claim.
@@ -37,7 +37,7 @@ export class ClaimOn<T, K extends keyof T> implements ClaimInterface<T> {
   }
 
   given<U>(ref: () => U): ConditionInterface<T> {
-    return new ConditionClass(this, ref)
+    return new Condition(this, ref)
   }
 }
 

@@ -6,14 +6,14 @@ import type { Predicate } from '@relational-fabric/canon'
 import type { ClaimInterface, ConditionInterface } from './types/index.js'
 import { typeGuard } from '@relational-fabric/canon'
 import { ClaimAnd, ClaimOn, ClaimOr } from './Claim/combinators.js'
-import ConditionClass from './Condition.js'
+import { Condition } from './Condition.js'
 
 /**
  * Claim class implementation.
  *
  * A Claim wraps a predicate or type guard and provides composition methods.
  */
-export default class Claim<T> implements ClaimInterface<T> {
+export class Claim<T> implements ClaimInterface<T> {
   public readonly check = typeGuard<T>((value: unknown) => this.predicate(value))
 
   constructor(private readonly predicate: Predicate<T>) {}
@@ -31,6 +31,6 @@ export default class Claim<T> implements ClaimInterface<T> {
   }
 
   given<U>(ref: () => U): ConditionInterface<T> {
-    return new ConditionClass(this, ref)
+    return new Condition(this, ref)
   }
 }

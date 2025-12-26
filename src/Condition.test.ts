@@ -4,8 +4,8 @@
 
 import { typeGuard } from '@relational-fabric/canon'
 import { describe, expect, it } from 'vitest'
-import Claim from './Claim.js'
-import Condition from './Condition.js'
+import { Claim } from './Claim.js'
+import { Condition } from './Condition.js'
 
 describe('condition', () => {
   it('creates a condition from a claim and reference function', () => {
