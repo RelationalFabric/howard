@@ -9,7 +9,22 @@ This directory tracks benchmark documentation for Howard's performance suites.
 
 ## Data Storage
 
-Machine-readable outputs live under `benchmarks/results/<branch>/latest.json` and mirror the branch that produced them (`main`, `develop`, or feature branches).
+Machine-readable outputs live under `benchmarks/results/<branch>/` with the following naming convention:
+
+| File | Description |
+|:---|:---|
+| `<batchId>-run<runId>.json` | Individual benchmark run result |
+| `latest.json` | Aggregated result from the most recent batch (used for comparison report) |
+
+### Batch and Run IDs
+
+- **Batch ID**: Groups runs from the same workflow trigger (timestamp-based locally, workflow run ID in CI)
+- **Run ID**: Identifies individual executions within a batch (1, 2, 3, etc.)
+
+When multiple runs exist for the same batch, they are automatically aggregated using:
+- Geometric mean for ops/sec (better for rate metrics)
+- Arithmetic mean for timing metrics
+- Min of mins, max of maxes for range
 
 ## CI Workflow
 
@@ -44,10 +59,23 @@ You can trigger benchmarks manually from the Actions tab:
 | Command | Description |
 | :--- | :--- |
 | `npm run bench` | Run benchmarks interactively (results not saved) |
-| `npm run bench:record` | Record benchmarks for current branch and regenerate comparison report |
-| `npm run bench:record -- --branch main` | Record benchmarks explicitly for `main` branch |
-| `npm run bench:record -- --branch develop` | Record benchmarks explicitly for `develop` branch |
+| `npm run bench:record` | Record benchmarks for current branch |
 | `npm run bench:report` | Regenerate comparison report from existing JSON results |
+
+### Recording Options
+
+```bash
+# Basic recording (auto-generates batch ID from timestamp)
+npm run bench:record -- --branch develop
+
+# Multiple runs with same batch for aggregation
+npm run bench:record -- --branch develop --batch mybatch --run 1
+npm run bench:record -- --branch develop --batch mybatch --run 2
+npm run bench:record -- --branch develop --batch mybatch --run 3
+
+# Aggregate-only mode (skip benchmarks, just aggregate existing batch files)
+npm run bench:record -- --branch develop --batch mybatch --aggregate-only
+```
 
 ## Local Workflow
 

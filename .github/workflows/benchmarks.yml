@@ -15,6 +15,15 @@ on:
         options:
           - main
           - develop
+      runs:
+        description: Number of benchmark runs for averaging
+        required: false
+        default: '3'
+        type: choice
+        options:
+          - '1'
+          - '3'
+          - '5'
 
 # Ensure only one benchmark run per branch at a time
 concurrency:
@@ -23,11 +32,17 @@ concurrency:
 
 jobs:
   benchmark:
-    name: Run Benchmarks
+    name: Run Benchmarks (${{ matrix.run }}/${{ strategy.job-total }})
     runs-on: ubuntu-latest
     permissions:
       contents: write
       pull-requests: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # Default to 3 runs for push events, use input for workflow_dispatch
+        run: ${{ github.event_name == 'workflow_dispatch' && fromJson(format('[{0}]', inputs.runs == '1' && '1' || inputs.runs == '3' && '1,2,3' || '1,2,3,4,5')) || fromJson('[1,2,3]') }}
 
     steps:
       - name: Determine target branch
@@ -38,6 +53,12 @@ jobs:
           else
             echo "branch=${{ github.ref_name }}" >> $GITHUB_OUTPUT
           fi
+
+      - name: Generate batch ID
+        id: batch
+        run: |
+          # Use workflow run ID + attempt as batch ID for consistency across matrix jobs
+          echo "id=${{ github.run_id }}-${{ github.run_attempt }}" >> $GITHUB_OUTPUT
 
       - name: Checkout code
         uses: actions/checkout@v4
@@ -54,10 +75,75 @@ jobs:
       - name: Install dependencies
         run: npm ci --ignore-scripts
 
-      - name: Run benchmarks
-        run: npm run bench:record -- --branch ${{ steps.target.outputs.branch }}
+      - name: Run benchmarks (run ${{ matrix.run }})
+        run: npm run bench:record -- --branch ${{ steps.target.outputs.branch }} --batch ${{ steps.batch.outputs.id }} --run ${{ matrix.run }}
         env:
           BENCH_BRANCH: ${{ steps.target.outputs.branch }}
+          BENCH_BATCH_ID: ${{ steps.batch.outputs.id }}
+          BENCH_RUN_ID: ${{ matrix.run }}
+
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results-${{ steps.target.outputs.branch }}-run${{ matrix.run }}
+          path: benchmarks/results/${{ steps.target.outputs.branch }}/${{ steps.batch.outputs.id }}-run${{ matrix.run }}.json
+          retention-days: 30
+
+  aggregate:
+    name: Aggregate Results
+    needs: benchmark
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Determine target branch
+        id: target
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "branch=${{ inputs.branch }}" >> $GITHUB_OUTPUT
+          else
+            echo "branch=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate batch ID
+        id: batch
+        run: |
+          echo "id=${{ github.run_id }}-${{ github.run_attempt }}" >> $GITHUB_OUTPUT
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.target.outputs.branch }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Download all benchmark results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: benchmark-results-${{ steps.target.outputs.branch }}-*
+          path: benchmarks/results/${{ steps.target.outputs.branch }}
+          merge-multiple: true
+
+      - name: List downloaded results
+        run: ls -la benchmarks/results/${{ steps.target.outputs.branch }}/
+
+      - name: Aggregate results and generate report
+        run: npm run bench:record -- --branch ${{ steps.target.outputs.branch }} --batch ${{ steps.batch.outputs.id }} --run aggregate
+        env:
+          BENCH_BRANCH: ${{ steps.target.outputs.branch }}
+          BENCH_BATCH_ID: ${{ steps.batch.outputs.id }}
+          BENCH_RUN_ID: aggregate
+          BENCH_AGGREGATE_ONLY: 'true'
 
       - name: Check for changes
         id: changes
