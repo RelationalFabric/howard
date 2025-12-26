@@ -2,8 +2,7 @@
  * ConditionLazy class - lazy evaluation strategy for conditionals
  */
 
-import type { ClaimInterface } from '../types/claim.js'
-import type { ConditionalInterface, ReferenceFn } from '../types/condition.js'
+import type { ClaimInterface, ConditionalInterface, ReferenceFn } from '../types/index.js'
 
 /**
  * ConditionLazy class implements the lazy strategy.

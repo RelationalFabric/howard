@@ -2,8 +2,7 @@
  * Condition class - immutable coupling of claim and reference
  */
 
-import type { ClaimInterface } from './types/claim.js'
-import type { ConditionInterface, ReferenceFn } from './types/condition.js'
+import type { ClaimInterface, ConditionInterface, ReferenceFn } from './types/index.js'
 import ConditionEager from './Condition/Eager.js'
 import ConditionLazy from './Condition/Lazy.js'
 

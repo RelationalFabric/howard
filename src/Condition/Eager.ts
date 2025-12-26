@@ -2,8 +2,7 @@
  * ConditionEager class - eager evaluation strategy for conditionals
  */
 
-import type { ClaimInterface } from '../types/claim.js'
-import type { ConditionalInterface, ReferenceFn } from '../types/condition.js'
+import type { ClaimInterface, ConditionalInterface, ReferenceFn } from '../types/index.js'
 
 /**
  * ConditionEager class implements the eager strategy.

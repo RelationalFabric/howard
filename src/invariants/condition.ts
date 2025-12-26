@@ -5,8 +5,7 @@
  */
 
 import type { Expect } from '@relational-fabric/canon'
-import type { ClaimInterface } from '../types/claim.js'
-import type { AnyCondition, AnyConditional, ConditionalInterface, ConditionInterface } from '../types/condition.js'
+import type { AnyCondition, AnyConditional, ClaimInterface, ConditionalInterface, ConditionInterface } from '../types/index.js'
 import { invariant } from '@relational-fabric/canon'
 
 // ConditionInterface.eager should return ConditionalInterface

@@ -5,7 +5,7 @@
  */
 
 import type { Expect, TypeGuard } from '@relational-fabric/canon'
-import type { AnyClaim, ClaimInterface } from '../types/claim.js'
+import type { AnyClaim, ClaimInterface } from '../types/index.js'
 import { invariant } from '@relational-fabric/canon'
 
 // ClaimInterface should have a check method that is a TypeGuard

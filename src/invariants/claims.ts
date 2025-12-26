@@ -5,8 +5,7 @@
  */
 
 import type { Expect, Predicate, TypeGuard } from '@relational-fabric/canon'
-import type { ClaimFor, ClaimInterface } from '../types/claim.js'
-import type { ClaimsInput, ClaimsResult } from '../types/claims.js'
+import type { ClaimFor, ClaimInterface, ClaimsInput, ClaimsResult } from '../types/index.js'
 import { invariant } from '@relational-fabric/canon'
 
 // Test types for verification

@@ -2,8 +2,7 @@
  * ClaimAnd class - logical AND composition of claims
  */
 
-import type { ClaimInterface } from '../types/claim.js'
-import type { ConditionInterface } from '../types/condition.js'
+import type { ClaimInterface, ConditionInterface } from '../types/index.js'
 import { typeGuard } from '@relational-fabric/canon'
 import ConditionClass from '../Condition.js'
 import ClaimOn from './On.js'

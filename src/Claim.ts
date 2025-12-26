@@ -3,8 +3,7 @@
  */
 
 import type { Predicate } from '@relational-fabric/canon'
-import type { ClaimInterface } from './types/claim.js'
-import type { ConditionInterface } from './types/condition.js'
+import type { ClaimInterface, ConditionInterface } from './types/index.js'
 import { typeGuard } from '@relational-fabric/canon'
 import ClaimAnd from './claim/And.js'
 import ClaimOn from './claim/On.js'

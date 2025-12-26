@@ -21,6 +21,7 @@
     "node": ">=22.0.0"
   },
   "scripts": {
+    "build": "echo \"This is a pure TypeScript library and has no code build process run check:all to verify your changes\" && exit 1",
     "build:adr:toc": "cd docs/adrs && npx adr generate toc",
     "check:all": "npm-run-all check:lint check:types check:test",
     "check:all:fix": "npm-run-all check:lint:fix check:types check:test",
@@ -41,7 +42,7 @@
     "@relational-fabric/canon": ">=1.2.0"
   },
   "dependencies": {
-    "@relational-fabric/canon": "^1.2.0",
+    "@relational-fabric/canon": ">=1.2.0",
     "husky": "^9.1.7"
   },
   "devDependencies": {

@@ -2,8 +2,7 @@
  * Core public API functions
  */
 
-import type { ClaimInterface } from './types/claim.js'
-import type { ClaimsInput, ClaimsResult } from './types/claims.js'
+import type { ClaimInterface, ClaimsInput, ClaimsResult } from './types/index.js'
 import ClaimClass from './Claim.js'
 import { nameForGuard, nameForPredicate } from './naming/index.js'
 
