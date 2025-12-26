@@ -1,4 +1,4 @@
-# The Logic of Claims: Why Validation Is Broken, and What Replaces It
+**The Logic of Claims: Why Validation Is Broken, and What Replaces It**
 
 *Every application you write manages truth. The question is whether you manage it explicitly, or allow it to scatter across your codebase like debris after a storm.*
 
@@ -9,6 +9,8 @@
 Philip Greenspun famously observed:
 
 > "Any sufficiently complicated C or Fortran program contains an ad hoc, informally-specified, bug-ridden, slow implementation of half of Common Lisp."
+>
+> — Philip Greenspun
 
 The same principle applies to data validity. Any sufficiently complex application contains an ad hoc, informally-specified, bug-ridden, slow implementation of half of a type system. We call this pattern "defensive coding," but the reality is less flattering: it is *semantic drift*.
 
@@ -54,6 +56,8 @@ In 1969, William Alvin Howard circulated a privately distributed paper titled *"
 This became known as the Curry-Howard correspondence, building on earlier work by Haskell Curry. As Xavier Leroy later reflected:
 
 > "Rarely have photocopies had such an impact: the Curry-Howard correspondence started to resonate with the renewal of logics and the boom of computer science of the 1970s, then established itself in the 1980s as a deep structural connection between languages and logics, between programming and proving."
+>
+> — Xavier Leroy
 
 The implication for software engineering is direct: *satisfying a type is the same as constructing a proof*. When you write a program that type-checks, you have—whether you know it or not—provided a formal proof that your program has certain properties.
 
@@ -68,6 +72,8 @@ The tragedy of modern development is that we use this proof system only at the t
 ## Howard as the Engine
 
 Howard is a **self-contained primitive** for building semantically aware data systems. It is named after William Alvin Howard, and it embodies the correspondence he helped formalise.
+
+### The Architecture
 
 The architecture is deliberately minimal. Howard provides:
 
@@ -101,6 +107,8 @@ const AUserWithCart = aUser.and(HasCart)
 ```
 
 The difference is not merely syntactic. In the imperative version, the logic is an opaque procedure. In the Howard version, `AUserWithCart` is a first-class object—it has identity, it can be inspected, it can be composed into larger claims, and it can generate proofs of its evaluation.
+
+### Decoupling as First Principle
 
 The critical architectural property is **decoupling**. The claim exists independently of:
 
@@ -148,6 +156,8 @@ At each boundary, the receiving code faces a choice:
 Neither option is satisfactory. The first sacrifices correctness. The second sacrifices performance and clarity.
 
 This is the **object metadata problem**. How do we make truths "stick" to data without incurring the logical tax of re-verification?
+
+### Proofs as Persistent Annotations
 
 The answer lies in treating proofs as **persistent annotations**. When a claim is proven against an object, the proof becomes metadata attached to that object. Subsequent checks can query this metadata rather than re-executing the predicate. If the object's content has not changed—verifiable via content-based hashing—the proof remains valid.
 
