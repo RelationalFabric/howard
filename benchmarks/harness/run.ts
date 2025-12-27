@@ -265,6 +265,9 @@ async function aggregateBatchResults(config: RunConfig): Promise<void> {
     }
   }
 
+  // Sort benchmarks by name for deterministic output ordering
+  aggregatedBenchmarks.sort((a, b) => a.name.localeCompare(b.name))
+
   // Build aggregated output structure
   const aggregatedOutput: BenchmarkOutput = {
     files: [
