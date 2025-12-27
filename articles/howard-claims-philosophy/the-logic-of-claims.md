@@ -1,10 +1,8 @@
-**The Logic of Claims: Why Validation Is Broken, and What Replaces It**
+# The Logic of Claims: Why Validation Is Broken, and What Replaces It
 
-*Moving from ad-hoc boolean checks to first-class propositions. How Howard transforms the way we think about data correctness.*
+## Moving from ad-hoc boolean checks to first-class propositions. How Howard transforms the way we think about data correctness.
 
----
-
-## The Category Error We Keep Making
+### The Category Error We Keep Making
 
 Every codebase I've worked on has the same pattern hiding in plain sight. Somewhere, scattered across utility files and service layers, there's a growing collection of functions that answer the same question: "Is this data what I think it is?"
 
@@ -32,8 +30,8 @@ It starts simple. One check. Then another. Then the checks start composing, but 
 Philip Greenspun once observed:
 
 > Any sufficiently complicated C or Fortran program contains an ad hoc, informally-specified, bug-ridden, slow implementation of half of Common Lisp.
->
-> ([Philip Greenspun](https://en.wikipedia.org/wiki/Greenspun%27s_tenth_rule))
+
+-- [Philip Greenspun](https://en.wikipedia.org/wiki/Greenspun%27s_tenth_rule)
 
 The same principle applies to validation. Any sufficiently complex application contains an ad hoc, informally-specified, bug-ridden, slow implementation of half of a type system. We call this "defensive coding." The reality is less flattering: it's *semantic drift*.
 
@@ -43,7 +41,7 @@ This isn't a failure of discipline. It's a failure of abstraction.
 
 ---
 
-## Why Validation Isn't Enough
+### Why Validation Isn't Enough
 
 The fundamental problem is that validation logic has no first-class representation. It exists as an operational side-effect, not as a structural element. The code answers "does this pass?" but never captures "what does passing mean?"
 
@@ -65,18 +63,23 @@ Now consider what you actually want:
 
 The gap between these two is the gap between *validation* and *claims*.
 
-| Validation | Claim |
-| --- | --- |
-| A procedure that returns boolean | A proposition that establishes truth |
-| Coupled to execution context | Independent of execution context |
-| Repeatable (must re-run) | Verifiable (can be proven once) |
-| Implicit meaning | Explicit semantics |
+**Validation:**
+- A procedure that returns boolean
+- Coupled to execution context
+- Repeatable (must re-run)
+- Implicit meaning
+
+**Claim:**
+- A proposition that establishes truth
+- Independent of execution context
+- Verifiable (can be proven once)
+- Explicit semantics
 
 When you write a validation function, you create an action. When you define a Claim, you create a *kind of truth*. The former exists only at runtime. The latter exists in your type system, your documentation, and your architecture.
 
 ---
 
-## The Correspondence That Changes Everything
+### The Correspondence That Changes Everything
 
 In 1969, William Alvin Howard circulated a privately distributed paper titled *"The Formulae-as-Types Notion of Construction."* The insight was profound:
 
@@ -85,12 +88,12 @@ In 1969, William Alvin Howard circulated a privately distributed paper titled *"
 This became known as the Curry-Howard correspondence, building on earlier work by Haskell Curry. As Xavier Leroy later reflected:
 
 > Rarely have photocopies had such an impact: the Curry-Howard correspondence started to resonate with the renewal of logics and the boom of computer science of the 1970s, then established itself in the 1980s as a deep structural connection between languages and logics, between programming and proving.
->
-> ([Xavier Leroy, "From Curry-Howard to Certified Compilation"](https://xavierleroy.org/CdF/2018-2019/))
+
+-- [Xavier Leroy, "From Curry-Howard to Certified Compilation"](https://xavierleroy.org/CdF/2018-2019/)
 
 The implication is direct: satisfying a type is the same as constructing a proof. When your program type-checks, you've provided a formal proof that it has certain properties. Your type system is a theorem prover in disguise.
 
-### What This Means for TypeScript Developers
+#### What This Means for TypeScript Developers
 
 Here's what most developers don't realise: **when you write a type guard, you are already doing manual theorem proving**, just without a formal framework.
 
@@ -111,7 +114,7 @@ Howard gives that process a name and a home. It transforms ephemeral boolean che
 
 ---
 
-## The Aha Moment: Thinking in Propositions
+### The Aha Moment: Thinking in Propositions
 
 There's a shift that happens when you stop thinking in booleans and start thinking in claims.
 
@@ -127,7 +130,7 @@ The economics are stark: in an infrastructure of suspicion, you pay for the same
 
 ---
 
-## Howard: Claims as First-Class Citizens
+### Howard: Claims as First-Class Citizens
 
 Howard is named after William Alvin Howard. It embodies the correspondence he helped formalise, making it practical for runtime logic.
 
@@ -135,7 +138,7 @@ Howard is named after William Alvin Howard. It embodies the correspondence he he
 
 The architecture is deliberately minimal:
 
-### The Core Primitives
+#### The Core Primitives
 
 1. **Claim definition** via deterministic predicates
 2. **Claim composition** via logical operators (and, or, on)
@@ -155,7 +158,7 @@ const { aUser, HasVerifiedEmail, HasActiveSubscription } = claims({
 
 Each claim is a first-class object. It has identity. It can be inspected. It can be composed into larger claims. It can generate proofs of its evaluation.
 
-### Decoupling as First Principle
+#### Decoupling as First Principle
 
 The critical property is **decoupling**. The claim exists independently of:
 
@@ -169,7 +172,7 @@ Howard doesn't integrate with your validation layer. It *replaces* the concept o
 
 ---
 
-## Composition in Practice: Building Relational Claims
+### Composition in Practice: Building Relational Claims
 
 The real power emerges when claims compose into complex propositions that reflect genuine business logic.
 
@@ -199,7 +202,7 @@ Picture it: `aUser` sits at the foundation. `HasVerifiedEmail` and `HasActiveSub
 
 The proof propagates. The semantics compound. The knowledge accumulates.
 
-### When Proofs Fail: Debugging Gold
+#### When Proofs Fail: Debugging Gold
 
 Here's where Howard pays dividends that ad-hoc validation never can.
 
@@ -225,7 +228,7 @@ In a traditional codebase, these relationships are implicit, scattered across co
 
 ---
 
-## The Next Problem: Making Truth Stick
+### The Next Problem: Making Truth Stick
 
 There's a question that follows naturally: what's the cost of re-verification?
 
@@ -240,7 +243,7 @@ Neither is satisfactory. The first sacrifices correctness. The second sacrifices
 
 This is the **object metadata problem**. How do we make truths "stick" to data without incurring the cost of re-verification?
 
-### Proofs as Persistent Annotations
+#### Proofs as Persistent Annotations
 
 The answer lies in treating proofs as **persistent annotations**. Once proven, a claim isn't just a result; it's a *certificate*. It travels with the data, ending the need for defensive re-interrogation at every boundary.
 
@@ -250,7 +253,7 @@ This transforms claims from expensive runtime guards into cheap lookups. The fir
 
 But this pattern requires infrastructure: content-based hashing, metadata attachment, cache invalidation, proof serialisation. It requires what we call the **Structural Integrity Engine**, a companion primitive that manages hash-to-proof mappings across your data system.
 
-### The Logical Tax
+#### The Logical Tax
 
 Here's the uncomfortable truth: **verifying a complex claim is computationally expensive**. A claim like `AQualifiedLead` might involve database lookups, date comparisons, and nested property traversals. Running it on every function boundary is a tax your system pays continuously.
 
@@ -260,7 +263,7 @@ The next two articles in this series will track Howard's evolution as we build e
 
 ---
 
-## The Vision: Semantic Integrity
+### The Vision: Semantic Integrity
 
 The goal is a software ecosystem where:
 
@@ -277,7 +280,7 @@ Howard is our contribution to that path. It's the logical engine for a truly rel
 
 ---
 
-## Getting Started
+### Getting Started
 
 Howard is available as part of the Relational Fabric ecosystem:
 
@@ -286,8 +289,6 @@ npm install @relational-fabric/howard
 ```
 
 Full documentation and examples are available at [the Howard repository](https://github.com/RelationalFabric/howard).
-
----
 
 *If your team is drowning in ad-hoc validation debt, if your data checks have scattered across services, your type guards have drifted out of sync, and your business logic has become a maze of defensive conditionals, I've been there. I'm the architect of [Relational Fabric](https://github.com/RelationalFabric), and I'm available for high-level advisory and architectural review for teams facing these exact challenges. Reach out via the project's official channels.*
 
