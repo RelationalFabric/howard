@@ -5,6 +5,9 @@ on:
     branches:
       - main
       - develop
+    paths-ignore:
+      - 'benchmarks/results/**'
+      - 'docs/benchmarks/comparison.md'
   workflow_dispatch:
     inputs:
       branch:
