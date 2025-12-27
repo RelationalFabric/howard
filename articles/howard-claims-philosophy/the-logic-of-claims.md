@@ -10,28 +10,34 @@ Every codebase I've worked on has the same pattern hiding in plain sight. Somewh
 
 But here's the problem we rarely articulate: **we are treating identity as a check when it should be a proof.**
 
-Validation is something we *do*. A claim is something the data *possesses*. The difference isn't semantic hairsplitting—it's a category error that shapes how we architect systems. When correctness is a process rather than a property, we build infrastructures of suspicion: every layer re-interrogates what the previous layer already established.
+Validation is something we *do*. A claim is something the data *possesses*. The difference isn't semantic hairsplitting; it's a category error that shapes how we architect systems. When correctness is a process rather than a property, we build infrastructures of suspicion: every layer re-interrogates what the previous layer already established.
 
 ```typescript
 function isValidUser(obj: unknown): boolean {
-  if (typeof obj !== 'object' || obj === null) return false
-  if (!('id' in obj) || typeof obj.id !== 'number') return false
-  if (!('email' in obj) || typeof obj.email !== 'string') return false
+  if (typeof obj !== 'object' || obj === null) {
+    return false
+  }
+  if (!('id' in obj) || typeof obj.id !== 'number') {
+    return false
+  }
+  if (!('email' in obj) || typeof obj.email !== 'string') {
+    return false
+  }
   return true
 }
 ```
 
-It starts simple. One check. Then another. Then the checks start composing—but not cleanly. You call `isValidUser` and then separately check `hasVerifiedEmail`. You write wrapper functions that combine them. You duplicate logic because the original function didn't quite fit the new context.
+It starts simple. One check. Then another. Then the checks start composing, but not cleanly. You call `isValidUser` and then separately check `hasVerifiedEmail`. You write wrapper functions that combine them. You duplicate logic because the original function didn't quite fit the new context.
 
 Philip Greenspun once observed:
 
 > Any sufficiently complicated C or Fortran program contains an ad hoc, informally-specified, bug-ridden, slow implementation of half of Common Lisp.
 >
-> — [Philip Greenspun](https://en.wikipedia.org/wiki/Greenspun%27s_tenth_rule)
+> ([Philip Greenspun](https://en.wikipedia.org/wiki/Greenspun%27s_tenth_rule))
 
 The same principle applies to validation. Any sufficiently complex application contains an ad hoc, informally-specified, bug-ridden, slow implementation of half of a type system. We call this "defensive coding." The reality is less flattering: it's *semantic drift*.
 
-And semantic drift accumulates into **semantic debt**—the hidden liability that bankrupts large-scale projects. Every scattered validation is a future inconsistency. Every duplicated check is a future divergence. The codebase doesn't just become messy; it becomes *untrustworthy*.
+And semantic drift accumulates into **semantic debt**, the hidden liability that bankrupts large-scale projects. Every scattered validation is a future inconsistency. Every duplicated check is a future divergence. The codebase doesn't just become messy; it becomes *untrustworthy*.
 
 This isn't a failure of discipline. It's a failure of abstraction.
 
@@ -80,19 +86,19 @@ This became known as the Curry-Howard correspondence, building on earlier work b
 
 > Rarely have photocopies had such an impact: the Curry-Howard correspondence started to resonate with the renewal of logics and the boom of computer science of the 1970s, then established itself in the 1980s as a deep structural connection between languages and logics, between programming and proving.
 >
-> — [Xavier Leroy, "From Curry-Howard to Certified Compilation"](https://xavierleroy.org/CdF/2018-2019/)
+> ([Xavier Leroy, "From Curry-Howard to Certified Compilation"](https://xavierleroy.org/CdF/2018-2019/))
 
 The implication is direct: satisfying a type is the same as constructing a proof. When your program type-checks, you've provided a formal proof that it has certain properties. Your type system is a theorem prover in disguise.
 
 ### What This Means for TypeScript Developers
 
-Here's what most developers don't realise: **when you write a type guard, you are already doing manual theorem proving**—just without a formal framework.
+Here's what most developers don't realise: **when you write a type guard, you are already doing manual theorem proving**, just without a formal framework.
 
 ```typescript
 function isUser(value: unknown): value is User {
-  return typeof value === 'object' 
-    && value !== null 
-    && 'id' in value 
+  return typeof value === 'object'
+    && value !== null
+    && 'id' in value
     && 'email' in value
 }
 ```
@@ -113,7 +119,7 @@ With validation, your mental model is: "I need to check if this data is okay bef
 
 With claims, your mental model becomes: "This data either *is* or *is not* a member of a category, and I can know which category by inspecting its proofs."
 
-The difference is subtle but transformative. In the first model, you're a gatekeeper—constantly suspicious, constantly re-checking. In the second model, you're an archivist—data arrives with its credentials already established, and your job is to read them.
+The difference is subtle but transformative. In the first model, you're a gatekeeper, constantly suspicious and constantly re-checking. In the second model, you're an archivist; data arrives with its credentials already established, and your job is to read them.
 
 This shift changes how you design APIs, structure modules, and reason about data flow. Functions stop asking "is this valid?" and start asking "what has been proven about this?" The defensive crouch relaxes into confident composition.
 
@@ -125,7 +131,7 @@ The economics are stark: in an infrastructure of suspicion, you pay for the same
 
 Howard is named after William Alvin Howard. It embodies the correspondence he helped formalise, making it practical for runtime logic.
 
-(A note on nomenclature: Haskell Curry achieved immortality in programming vernacular twice over—once as a language, once as a verb. We curry functions without a second thought. Howard, despite contributing equally to one of computer science's most profound insights, received no such honour. There is no "to howard" in our lexicon. This engine is a small corrective.)
+(A note on nomenclature: Haskell Curry achieved immortality in programming vernacular twice over (once as a language, once as a verb). We curry functions without a second thought. Howard, despite contributing equally to one of computer science's most profound insights, received no such honour. There is no "to howard" in our lexicon. This engine is a small corrective.)
 
 The architecture is deliberately minimal:
 
@@ -142,7 +148,8 @@ Instead of writing imperative validation, Howard expresses logic as composable s
 import { claims } from 'howard'
 
 const { aUser, HasVerifiedEmail, HasActiveSubscription } = claims({
-  types: { isUser, hasVerifiedEmail, hasActiveSubscription }
+  relations: { hasVerifiedEmail, hasActiveSubscription },
+  types: { isUser }
 })
 ```
 
@@ -166,12 +173,13 @@ Howard doesn't integrate with your validation layer. It *replaces* the concept o
 
 The real power emerges when claims compose into complex propositions that reflect genuine business logic.
 
-Consider a sales system where a "Qualified Lead" isn't just a user with an email—it's a user with a *verified* email, an *active* subscription, and engagement within the last 30 days:
+Consider a sales system where a "Qualified Lead" isn't just a user with an email; it's a user with a *verified* email, an *active* subscription, and engagement within the last 30 days:
 
 ```typescript
 // Atomic claims from predicates and type guards
 const { aUser, HasVerifiedEmail, HasActiveSubscription, HasRecentEngagement } = claims({
-  types: { isUser, hasVerifiedEmail, hasActiveSubscription, hasRecentEngagement }
+  relations: { hasVerifiedEmail, hasActiveSubscription, hasRecentEngagement },
+  types: { isUser }
 })
 
 // Compose into relational claims
@@ -183,9 +191,9 @@ const AQualifiedLead = AnActiveCustomer.and(HasRecentEngagement)
 const AQualifiedLeadWithHighValue = AQualifiedLead.on('subscription', HasHighLifetimeValue)
 ```
 
-Notice what's happening here: the `QualifiedLead` claim doesn't just check a single object—it establishes a *relational state* across multiple concerns. The user's identity, their email verification status, their subscription state, and their engagement history are woven into a single verifiable proposition.
+Notice what's happening here: the `QualifiedLead` claim doesn't just check a single object; it establishes a *relational state* across multiple concerns. The user's identity, their email verification status, their subscription state, and their engagement history are woven into a single verifiable proposition.
 
-This isn't just validation with better syntax. It's a **fabric of knowledge**—a graph where each node is a proposition and each edge is a logical relationship.
+This isn't just validation with better syntax. It's a **fabric of knowledge**, a graph where each node is a proposition and each edge is a logical relationship.
 
 Picture it: `aUser` sits at the foundation. `HasVerifiedEmail` and `HasActiveSubscription` branch from it. `AQualifiedLead` sits at the intersection, representing the conjunction of all three. When you prove `AQualifiedLead`, you've simultaneously proven every claim in its ancestry.
 
@@ -197,13 +205,13 @@ Here's where Howard pays dividends that ad-hoc validation never can.
 
 In traditional code, when a complex validation fails, you get `false`. That's it. You're left to trace through nested conditionals, console-logging your way to the offending check. The more complex the validation, the more opaque the failure.
 
-In Howard, when a claim fails, you get a **Proof**—an immutable record of the entire evaluation. The proof contains not just the result, but the *reasoning*:
+In Howard, when a claim fails, you get a **Proof**, an immutable record of the entire evaluation. The proof contains not just the result, but the *reasoning*:
 
 ```typescript
 const proof = prove(AQualifiedLead, suspectUser)
 
 if (!proof.result) {
-  console.log(proof.explanation.human())
+  console.error(proof.explanation.human())
   // "AQualifiedLead failed: HasRecentEngagement returned false
   //  (last engagement: 47 days ago, threshold: 30 days)"
 }
@@ -213,7 +221,7 @@ The proof traces back through the composition graph, pinpointing exactly which a
 
 This is the debugging experience that senior engineers dream of: failures that explain themselves.
 
-In a traditional codebase, these relationships are implicit—scattered across conditionals, hidden in control flow. In a Howard-based system, they're explicit—declared, composed, and verifiable.
+In a traditional codebase, these relationships are implicit, scattered across conditionals and hidden in control flow. In a Howard-based system, they're explicit: declared, composed, and verifiable.
 
 ---
 
@@ -221,7 +229,7 @@ In a traditional codebase, these relationships are implicit—scattered across c
 
 There's a question that follows naturally: what's the cost of re-verification?
 
-Picture the flow: a request enters your system. At the boundary, you prove `AQualifiedLead` against the incoming user object. The proof succeeds. Now that object travels through your service layer, your domain logic, your persistence layer. At each boundary, the receiving code doesn't re-run the predicate—it queries the proof. "Has this been proven as a QualifiedLead?" Yes. Move on. The verification happened once; every downstream consumer benefits.
+Picture the flow: a request enters your system. At the boundary, you prove `AQualifiedLead` against the incoming user object. The proof succeeds. Now that object travels through your service layer, your domain logic, your persistence layer. At each boundary, the receiving code doesn't re-run the predicate; it queries the proof. "Has this been proven as a QualifiedLead?" Yes. Move on. The verification happened once; every downstream consumer benefits.
 
 But today, that's not how it works. At each boundary, the receiving code faces a choice:
 
@@ -236,17 +244,17 @@ This is the **object metadata problem**. How do we make truths "stick" to data w
 
 The answer lies in treating proofs as **persistent annotations**. Once proven, a claim isn't just a result; it's a *certificate*. It travels with the data, ending the need for defensive re-interrogation at every boundary.
 
-When a claim is proven against an object, the proof becomes metadata attached to that object. Subsequent checks query this metadata rather than re-executing the predicate. If the object's content hasn't changed—verifiable via content-based hashing—the proof remains valid.
+When a claim is proven against an object, the proof becomes metadata attached to that object. Subsequent checks query this metadata rather than re-executing the predicate. If the object's content hasn't changed (verifiable via content-based hashing), the proof remains valid.
 
 This transforms claims from expensive runtime guards into cheap lookups. The first verification pays the cost. All subsequent queries benefit from the cached proof.
 
-But this pattern requires infrastructure: content-based hashing, metadata attachment, cache invalidation, proof serialisation. It requires what we call the **Structural Integrity Engine**—a companion primitive that manages hash-to-proof mappings across your data system.
+But this pattern requires infrastructure: content-based hashing, metadata attachment, cache invalidation, proof serialisation. It requires what we call the **Structural Integrity Engine**, a companion primitive that manages hash-to-proof mappings across your data system.
 
 ### The Logical Tax
 
 Here's the uncomfortable truth: **verifying a complex claim is computationally expensive**. A claim like `AQualifiedLead` might involve database lookups, date comparisons, and nested property traversals. Running it on every function boundary is a tax your system pays continuously.
 
-But a logical world isn't free. The elegance of composable claims comes with a cost. I call this the **Logical Tax**—the computational overhead of proving complex propositions at runtime. Every composed claim, every nested property check, every conditional binding adds cycles. At scale, the tax becomes untenable.
+But a logical world isn't free. The elegance of composable claims comes with a cost. I call this the **Logical Tax**, the computational overhead of proving complex propositions at runtime. Every composed claim, every nested property check, every conditional binding adds cycles. At scale, the tax becomes untenable.
 
 The next two articles in this series will track Howard's evolution as we build exactly this: **Fast Value Hashing** to eliminate the Logical Tax, and **Object Metadata** to make proofs persist. The logical foundation is laid. Making it fast, and making it stick, comes next.
 
@@ -259,7 +267,7 @@ The goal is a software ecosystem where:
 - Data carries verifiable claims about its own correctness
 - Business logic operates on proven propositions, not hopeful assumptions
 - The gap between "what the type says" and "what the data is" closes to zero
-- Re-verification becomes unnecessary, not because we trust blindly, but because proofs persist—and once we solve the **Logical Tax**, constructing those proofs becomes virtually zero-cost
+- Re-verification becomes unnecessary, not because we trust blindly, but because proofs persist. Once we solve the **Logical Tax**, constructing those proofs becomes virtually zero-cost.
 
 This is **semantic integrity**: a state where the meaning of your data is explicitly represented, rigorously verified, and structurally enforced.
 
@@ -281,6 +289,6 @@ Full documentation and examples are available at [the Howard repository](https:/
 
 ---
 
-*If your team is drowning in ad-hoc validation debt—if your data checks have scattered across services, your type guards have drifted out of sync, and your business logic has become a maze of defensive conditionals—I've been there. I'm the architect of [Relational Fabric](https://github.com/RelationalFabric), and I'm available for high-level advisory and architectural review for teams facing these exact challenges. Reach out via the project's official channels.*
+*If your team is drowning in ad-hoc validation debt, if your data checks have scattered across services, your type guards have drifted out of sync, and your business logic has become a maze of defensive conditionals, I've been there. I'm the architect of [Relational Fabric](https://github.com/RelationalFabric), and I'm available for high-level advisory and architectural review for teams facing these exact challenges. Reach out via the project's official channels.*
 
 *Howard is open source and part of the Relational Fabric ecosystem. Feedback and contributions welcome.*
