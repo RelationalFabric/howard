@@ -7,18 +7,18 @@ Results are automatically updated when benchmarks are recorded for either branch
 
 | Branch | Last Updated | Status |
 | :--- | :--- | :--- |
-| main | 2025-12-26 | ✅ Available |
-| develop | 2025-12-26 | ✅ Available |
+| main | 2025-12-27 | ✅ Available |
+| develop | 2025-12-27 | ✅ Available |
 
 ## Branch Comparison
 
 | Benchmark | main (ops/sec) | develop (ops/sec) | Δ | Status |
 | :--- | ---: | ---: | ---: | :---: |
-| claim.and (positive & even) | 95.7K | 107.2K | +12.0% | 🚀 |
-| claim.check negative branch | 226.4K | 191.0K | -15.6% | ⚠️ |
-| claim.check positive number | 180.7K | 184.4K | +2.1% | ≈ |
-| claim.on (object.value) | 82.1K | 86.3K | +5.1% | 🚀 |
-| claim.or (number | string) | 183.2K | 184.4K | +0.6% | ≈ |
+| claim.and (positive & even) | 95.7K | 90.9K | -5.0% | ⚠️ |
+| claim.check negative branch | 226.4K | 176.9K | -21.8% | ⚠️ |
+| claim.check positive number | 180.7K | 157.6K | -12.8% | ⚠️ |
+| claim.on (object.value) | 82.1K | 56.5K | -31.2% | ⚠️ |
+| claim.or (number | string) | 183.2K | 170.2K | -7.1% | ⚠️ |
 
 ### Legend
 
@@ -44,11 +44,11 @@ Results are automatically updated when benchmarks are recorded for either branch
 
 | Benchmark | ops/sec | mean (ms) | ±RME | p99 (ms) | samples |
 | :--- | ---: | ---: | ---: | ---: | ---: |
-| claim.check negative branch | 191.0K | 5.2345 | ±0.10% | 5.7600 | 191,042 |
-| claim.check positive number | 184.4K | 5.4222 | ±0.14% | 6.5650 | 184,428 |
-| claim.or (number | string) | 184.4K | 5.4228 | ±0.16% | 5.8740 | 184,408 |
-| claim.and (positive & even) | 107.2K | 9.3279 | ±0.16% | 12.5660 | 107,206 |
-| claim.on (object.value) | 86.3K | 11.5816 | ±0.16% | 14.3320 | 86,344 |
+| claim.check negative branch | 176.9K | 5.6524 | ±0.06% | 6.6120 | 530,880 |
+| claim.or (number | string) | 170.2K | 5.8773 | ±0.07% | 7.0760 | 510,841 |
+| claim.check positive number | 157.6K | 6.3445 | ±0.06% | 10.3993 | 472,850 |
+| claim.and (positive & even) | 90.9K | 11.0042 | ±0.09% | 17.8463 | 272,625 |
+| claim.on (object.value) | 56.5K | 17.7149 | ±0.09% | 29.3080 | 169,507 |
 
 ## How to Update
 
