@@ -66,7 +66,7 @@ export class ClaimAnd<T, U> implements ClaimInterface<T & U> {
   }
 
   given<V>(ref: () => V): ConditionInterface<T & U> {
-    return new ConditionClass(this, ref)
+    return new Condition(this, ref)
   }
 }
 
@@ -95,6 +95,6 @@ export class ClaimOr<T, U> implements ClaimInterface<T | U> {
   }
 
   given<V>(ref: () => V): ConditionInterface<T | U> {
-    return new ConditionClass(this, ref)
+    return new Condition(this, ref)
   }
 }

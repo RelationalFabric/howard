@@ -14,7 +14,8 @@
     "predicates"
   ],
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./internals": "./src/internals.ts"
   },
   "main": "./src/index.ts",
   "engines": {
@@ -36,14 +37,16 @@
     "check:types:src": "tsc --noEmit",
     "checks": "npm run check:all",
     "dev": "tsx --watch src/index.ts",
-    "test": "npm run check:test"
+    "test": "npm run check:test",
+    "bench": "vitest bench",
+    "bench:record": "tsx benchmarks/harness/run.ts",
+    "bench:report": "tsx benchmarks/harness/generate-report.ts"
   },
   "peerDependencies": {
     "@relational-fabric/canon": ">=1.2.0"
   },
   "dependencies": {
-    "@relational-fabric/canon": ">=1.2.0",
-    "canon": "^0.4.1",
+    "@relational-fabric/canon": "github:RelationalFabric/canon#develop",
     "husky": "^9.1.7"
   },
   "devDependencies": {
