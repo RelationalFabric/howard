@@ -221,9 +221,9 @@ In a traditional codebase, these relationships are implicit—scattered across c
 
 There's a question that follows naturally: what's the cost of re-verification?
 
-Consider a data object that's been validated. It satisfies a complex claim like `AQualifiedLead`. The claim is proven. But now you pass that object to another function. And another. And another.
+Picture the flow: a request enters your system. At the boundary, you prove `AQualifiedLead` against the incoming user object. The proof succeeds. Now that object travels through your service layer, your domain logic, your persistence layer. At each boundary, the receiving code doesn't re-run the predicate—it queries the proof. "Has this been proven as a QualifiedLead?" Yes. Move on. The verification happened once; every downstream consumer benefits.
 
-At each boundary, the receiving code faces a choice:
+But today, that's not how it works. At each boundary, the receiving code faces a choice:
 
 1. **Trust** that the previous layer validated correctly (fragile, breaks encapsulation)
 2. **Re-validate** with the same checks (expensive, redundant)
