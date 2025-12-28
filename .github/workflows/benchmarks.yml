@@ -7,7 +7,7 @@ on:
       - develop
     paths-ignore:
       - 'benchmarks/results/**'
-      - 'docs/benchmarks/comparison.md'
+      - docs/benchmarks/comparison.md
   workflow_dispatch:
     inputs:
       branch:
@@ -181,6 +181,10 @@ jobs:
             # Create new branch from current position
             git checkout -b "$BENCH_BRANCH"
           fi
+
+          # Run checks and auto-fix before committing
+          npm run check:all:fix
+          git add -A
 
           # Commit changes
           git commit -m "chore(benchmarks): update ${{ steps.target.outputs.branch }} results

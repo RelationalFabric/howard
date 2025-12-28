@@ -4,7 +4,7 @@ Track Canon Develop Branch
 
 ## Status
 
-Accepted <!-- 2025-11-13 -->
+Superseded by [ADR 0008: Use Canon NPM Release](./0008-use-canon-npm-release.md)
 
 ## Context
 
