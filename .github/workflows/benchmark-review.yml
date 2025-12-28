@@ -89,7 +89,7 @@ jobs:
             if [ -z "$file" ]; then
               continue
             fi
-            
+
             ALLOWED=false
             for pattern in "${ALLOWED_PATTERNS[@]}"; do
               if [[ "$file" == "$pattern"* ]] || [[ "$file" == "$pattern" ]]; then
@@ -97,7 +97,7 @@ jobs:
                 break
               fi
             done
-            
+
             if [ "$ALLOWED" = false ]; then
               UNEXPECTED_FILES+=("$file")
             fi
