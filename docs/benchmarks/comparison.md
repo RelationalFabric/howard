@@ -14,11 +14,11 @@ Results are automatically updated when benchmarks are recorded for either branch
 
 | Benchmark | main (ops/sec) | develop (ops/sec) | Δ | Status |
 | :--- | ---: | ---: | ---: | :---: |
-| claim.and (positive & even) | 90.9K | 90.4K | -0.5% | ≈ |
-| claim.check negative branch | 173.5K | 179.1K | +3.3% | ≈ |
-| claim.check positive number | 157.4K | 157.0K | -0.3% | ≈ |
-| claim.on (object.value) | 60.9K | 55.1K | -9.5% | ⚠️ |
-| claim.or (number | string) | 168.7K | 170.2K | +0.9% | ≈ |
+| claim.and (positive & even) | 90.9K | 90.9K | +0.1% | ≈ |
+| claim.check negative branch | 173.5K | 169.5K | -2.3% | ≈ |
+| claim.check positive number | 157.4K | 154.9K | -1.6% | ≈ |
+| claim.on (object.value) | 60.9K | 59.6K | -2.1% | ≈ |
+| claim.or (number | string) | 168.7K | 166.9K | -1.1% | ≈ |
 
 ### Legend
 
@@ -44,11 +44,11 @@ Results are automatically updated when benchmarks are recorded for either branch
 
 | Benchmark | ops/sec | mean (ms) | ±RME | p99 (ms) | samples |
 | :--- | ---: | ---: | ---: | ---: | ---: |
-| claim.check negative branch | 179.1K | 5.5835 | ±0.07% | 8.1213 | 537,301 |
-| claim.or (number | string) | 170.2K | 5.8762 | ±0.09% | 10.9437 | 510,571 |
-| claim.check positive number | 157.0K | 6.3691 | ±0.23% | 9.9553 | 471,029 |
-| claim.and (positive & even) | 90.4K | 11.0606 | ±0.13% | 18.6450 | 271,239 |
-| claim.on (object.value) | 55.1K | 18.1685 | ±0.16% | 33.8700 | 165,396 |
+| claim.check negative branch | 169.5K | 5.9194 | ±0.09% | 8.3560 | 510,401 |
+| claim.or (number | string) | 166.9K | 5.9978 | ±0.14% | 9.4077 | 501,018 |
+| claim.check positive number | 154.9K | 6.4580 | ±0.10% | 12.1827 | 464,711 |
+| claim.and (positive & even) | 90.9K | 10.9963 | ±0.06% | 17.8167 | 272,821 |
+| claim.on (object.value) | 59.6K | 16.8112 | ±0.19% | 32.8780 | 179,277 |
 
 ## How to Update
 
