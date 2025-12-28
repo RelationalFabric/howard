@@ -1,0 +1,254 @@
+name: Benchmarks
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    paths-ignore:
+      - 'benchmarks/results/**'
+      - docs/benchmarks/comparison.md
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: Branch to benchmark (main or develop)
+        required: true
+        default: develop
+        type: choice
+        options:
+          - main
+          - develop
+      runs:
+        description: Number of benchmark runs for averaging
+        required: false
+        default: '3'
+        type: choice
+        options:
+          - '1'
+          - '3'
+          - '5'
+
+# Ensure only one benchmark run per branch at a time
+concurrency:
+  group: benchmarks-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  benchmark:
+    name: Run Benchmarks (${{ matrix.run }}/${{ strategy.job-total }})
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # Default to 3 runs for push events, use input for workflow_dispatch
+        run: ${{ github.event_name == 'workflow_dispatch' && fromJson(format('[{0}]', inputs.runs == '1' && '1' || inputs.runs == '3' && '1,2,3' || '1,2,3,4,5')) || fromJson('[1,2,3]') }}
+
+    steps:
+      - name: Determine target branch
+        id: target
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "branch=${{ inputs.branch }}" >> $GITHUB_OUTPUT
+          else
+            echo "branch=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate batch ID
+        id: batch
+        run: |
+          # Use workflow run ID + attempt as batch ID for consistency across matrix jobs
+          echo "id=${{ github.run_id }}-${{ github.run_attempt }}" >> $GITHUB_OUTPUT
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.target.outputs.branch }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Run benchmarks (run ${{ matrix.run }})
+        run: npm run bench:record -- --branch ${{ steps.target.outputs.branch }} --batch ${{ steps.batch.outputs.id }} --run ${{ matrix.run }}
+        env:
+          BENCH_BRANCH: ${{ steps.target.outputs.branch }}
+          BENCH_BATCH_ID: ${{ steps.batch.outputs.id }}
+          BENCH_RUN_ID: ${{ matrix.run }}
+
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results-${{ steps.target.outputs.branch }}-run${{ matrix.run }}
+          path: benchmarks/results/${{ steps.target.outputs.branch }}/${{ steps.batch.outputs.id }}-run${{ matrix.run }}.json
+          retention-days: 30
+
+  aggregate:
+    name: Aggregate Results
+    needs: benchmark
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Determine target branch
+        id: target
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "branch=${{ inputs.branch }}" >> $GITHUB_OUTPUT
+          else
+            echo "branch=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate batch ID
+        id: batch
+        run: |
+          echo "id=${{ github.run_id }}-${{ github.run_attempt }}" >> $GITHUB_OUTPUT
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.target.outputs.branch }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Download all benchmark results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: benchmark-results-${{ steps.target.outputs.branch }}-*
+          path: benchmarks/results/${{ steps.target.outputs.branch }}
+          merge-multiple: true
+
+      - name: List downloaded results
+        run: ls -la benchmarks/results/${{ steps.target.outputs.branch }}/
+
+      - name: Aggregate results and generate report
+        run: npm run bench:record -- --branch ${{ steps.target.outputs.branch }} --batch ${{ steps.batch.outputs.id }} --run aggregate
+        env:
+          BENCH_BRANCH: ${{ steps.target.outputs.branch }}
+          BENCH_BATCH_ID: ${{ steps.batch.outputs.id }}
+          BENCH_RUN_ID: aggregate
+          BENCH_AGGREGATE_ONLY: 'true'
+
+      - name: Check for changes
+        id: changes
+        run: |
+          git add -A
+          if git diff --staged --quiet; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create benchmark update branch
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          BENCH_BRANCH="bench/${{ steps.target.outputs.branch }}"
+          TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+          SHORT_SHA=$(git rev-parse --short HEAD)
+
+          # Configure git
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Check if bench branch exists remotely
+          if git ls-remote --exit-code --heads origin "$BENCH_BRANCH" > /dev/null 2>&1; then
+            # Fetch and reset to it
+            git fetch origin "$BENCH_BRANCH"
+            git checkout -B "$BENCH_BRANCH" "origin/$BENCH_BRANCH"
+            # Cherry-pick our changes on top
+            git checkout ${{ steps.target.outputs.branch }} -- benchmarks/results docs/benchmarks/comparison.md
+            git add -A
+          else
+            # Create new branch from current position
+            git checkout -b "$BENCH_BRANCH"
+          fi
+
+          # Run checks and auto-fix before committing
+          npm run check:all:fix
+          git add -A
+
+          # Commit changes
+          git commit -m "chore(benchmarks): update ${{ steps.target.outputs.branch }} results
+
+          Benchmark results from ${{ steps.target.outputs.branch }} @ ${SHORT_SHA}
+          Recorded: ${TIMESTAMP}
+
+          [skip ci]"
+
+          # Push the branch
+          git push -u origin "$BENCH_BRANCH" --force-with-lease || git push -u origin "$BENCH_BRANCH" --force
+
+      - name: Create or update Pull Request
+        if: steps.changes.outputs.has_changes == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BENCH_BRANCH="bench/${{ steps.target.outputs.branch }}"
+          TARGET_BRANCH="${{ steps.target.outputs.branch }}"
+          SHORT_SHA=$(git rev-parse --short ${{ steps.target.outputs.branch }})
+
+          # All PRs go to develop (path to main is always via develop)
+          BASE_BRANCH="develop"
+
+          # Check if PR already exists
+          EXISTING_PR=$(gh pr list --head "$BENCH_BRANCH" --base "$BASE_BRANCH" --json number --jq '.[0].number' 2>/dev/null || echo "")
+
+          if [ -n "$EXISTING_PR" ] && [ "$EXISTING_PR" != "null" ]; then
+            echo "✅ PR #$EXISTING_PR already exists, updated with latest results"
+            gh pr comment "$EXISTING_PR" --body "🔄 **Benchmark results updated**
+
+          Branch: \`$TARGET_BRANCH\` @ \`$SHORT_SHA\`
+          Recorded: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+
+          See the comparison report in \`docs/benchmarks/comparison.md\`."
+          else
+            # Create new PR
+            gh pr create \
+              --base "$BASE_BRANCH" \
+              --head "$BENCH_BRANCH" \
+              --title "chore(benchmarks): update $TARGET_BRANCH benchmark results" \
+              --body "$(cat <<'EOF'
+          ## Summary
+
+          Automated benchmark results update for the `${{ steps.target.outputs.branch }}` branch.
+
+          - Updates `benchmarks/results/${{ steps.target.outputs.branch }}/latest.json`
+          - Regenerates `docs/benchmarks/comparison.md`
+
+          ## Review
+
+          Check the comparison report to verify:
+          - No unexpected regressions (⚠️ markers)
+          - Results are within expected variance
+
+          ## Notes
+
+          - This PR was created automatically by the benchmarks workflow
+          - All benchmark PRs target `develop` (path to `main` is always via `develop`)
+          - Safe to merge if results look reasonable
+
+          ---
+          *Triggered by push to `${{ steps.target.outputs.branch }}` @ `$SHORT_SHA`*
+          EOF
+          )"
+            echo "✅ Created new benchmark PR"
+          fi

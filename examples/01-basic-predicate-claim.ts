@@ -24,18 +24,6 @@ the kind of logic you write every day, but we're about to give it structure.
 */
 
 // ```
-function isEmpty(value: unknown): boolean {
-  if (Array.isArray(value)) {
-    return value.length === 0
-  }
-  if (typeof value === 'object' && value !== null) {
-    return Object.keys(value).length === 0
-  }
-  if (typeof value === 'string') {
-    return value.length === 0
-  }
-  return false
-}
 // ```
 
 /*
@@ -48,10 +36,27 @@ to proposition.
 */
 
 // ```
-import { claims } from '../src/index.js'
+import { typeGuard } from '@relational-fabric/canon'
+import { claims } from '@relational-fabric/howard'
+
+// Empty values can be empty arrays, empty objects, or empty strings
+type EmptyValue = [] | Record<string, never> | ''
+
+const isEmpty = typeGuard<EmptyValue>((value: unknown): value is EmptyValue => {
+  if (Array.isArray(value)) {
+    return value.length === 0
+  }
+  if (typeof value === 'object' && value !== null) {
+    return Object.keys(value).length === 0
+  }
+  if (typeof value === 'string') {
+    return value.length === 0
+  }
+  return false
+})
 
 const { IsEmpty } = claims({
-  predicates: { isEmpty }
+  relations: { isEmpty },
 })
 // ```
 
@@ -66,31 +71,31 @@ satisfy the IsEmpty proposition?"
 
 if (import.meta.vitest) {
   const { it, expect } = import.meta.vitest
-  
+
   it('An empty object satisfies the IsEmpty claim', () => {
     expect(IsEmpty.check({})).toBe(true)
   })
-  
+
   it('An object with properties does not satisfy IsEmpty', () => {
     expect(IsEmpty.check({ a: 1 })).toBe(false)
   })
-  
+
   it('An empty array satisfies the IsEmpty claim', () => {
     expect(IsEmpty.check([])).toBe(true)
   })
-  
+
   it('An array with elements does not satisfy IsEmpty', () => {
     expect(IsEmpty.check([1, 2, 3])).toBe(false)
   })
-  
+
   it('An empty string satisfies the IsEmpty claim', () => {
     expect(IsEmpty.check('')).toBe(true)
   })
-  
+
   it('A string with content does not satisfy IsEmpty', () => {
     expect(IsEmpty.check('hello')).toBe(false)
   })
-  
+
   it('Numbers do not satisfy IsEmpty', () => {
     expect(IsEmpty.check(0)).toBe(false)
     expect(IsEmpty.check(42)).toBe(false)
@@ -120,41 +125,41 @@ function hasLength(value: unknown): boolean {
 }
 
 const { IsPositive, HasLength } = claims({
-  predicates: { 
+  relations: {
     isPositive,
-    hasLength
-  }
+    hasLength,
+  },
 })
 // ```
 
 if (import.meta.vitest) {
   const { it, expect } = import.meta.vitest
-  
+
   it('Positive numbers satisfy the IsPositive claim', () => {
     expect(IsPositive.check(42)).toBe(true)
     expect(IsPositive.check(0.1)).toBe(true)
   })
-  
+
   it('Zero and negative numbers do not satisfy IsPositive', () => {
     expect(IsPositive.check(0)).toBe(false)
     expect(IsPositive.check(-5)).toBe(false)
   })
-  
+
   it('Non-numbers do not satisfy IsPositive', () => {
     expect(IsPositive.check('42')).toBe(false)
     expect(IsPositive.check(null)).toBe(false)
   })
-  
+
   it('Non-empty arrays and strings satisfy HasLength', () => {
     expect(HasLength.check([1, 2, 3])).toBe(true)
     expect(HasLength.check('hello')).toBe(true)
   })
-  
+
   it('Empty arrays and strings do not satisfy HasLength', () => {
     expect(HasLength.check([])).toBe(false)
     expect(HasLength.check('')).toBe(false)
   })
-  
+
   it('Values without length do not satisfy HasLength', () => {
     expect(HasLength.check(42)).toBe(false)
     expect(HasLength.check({})).toBe(false)
@@ -171,4 +176,3 @@ In the next examples, we'll see how claims compose, how they work with type
 guards for TypeScript integration, and how they transform into verifiable proofs.
 But everything starts here—with the humble act of making a proposition about data.
 */
-

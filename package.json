@@ -1,18 +1,28 @@
 {
   "name": "@relational-fabric/howard",
+  "type": "module",
   "version": "0.1.0",
   "description": "The logical engine for a truly relational world",
-  "type": "module",
-  "main": "./src/index.ts",
+  "author": "Relational Fabric",
+  "license": "MIT",
+  "keywords": [
+    "logic",
+    "claims",
+    "proofs",
+    "curry-howard",
+    "type-system",
+    "predicates"
+  ],
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./internals": "./src/internals.ts"
   },
+  "main": "./src/index.ts",
   "engines": {
     "node": ">=22.0.0"
   },
   "scripts": {
-    "build:adr": "npm-run-all build:adr:toc build:adr:index",
-    "build:adr:index": "tsx scripts/generate-adr-index.ts",
+    "build": "echo \"This is a pure TypeScript library and has no code build process run check:all to verify your changes\" && exit 1",
     "build:adr:toc": "cd docs/adrs && npx adr generate toc",
     "check:all": "npm-run-all check:lint check:types check:test",
     "check:all:fix": "npm-run-all check:lint:fix check:types check:test",
@@ -24,26 +34,20 @@
     "check:types": "npm run check:types:all",
     "check:types:all": "npm-run-all check:types:src check:types:examples",
     "check:types:examples": "tsc --noEmit --project examples/tsconfig.json",
-    "check:types:src": "tsc --noEmit --skipLibCheck",
+    "check:types:src": "tsc --noEmit",
     "checks": "npm run check:all",
     "dev": "tsx --watch src/index.ts",
-    "test": "npm run check:test"
-  },
-  "keywords": [
-    "logic",
-    "claims",
-    "proofs",
-    "curry-howard",
-    "type-system",
-    "predicates"
-  ],
-  "author": "Relational Fabric",
-  "license": "MIT",
-  "dependencies": {
-    "@relational-fabric/canon": "^1.2.0"
+    "test": "npm run check:test",
+    "bench": "vitest bench",
+    "bench:record": "tsx benchmarks/harness/run.ts",
+    "bench:report": "tsx benchmarks/harness/generate-report.ts"
   },
   "peerDependencies": {
-    "@relational-fabric/canon": "^1.2.0"
+    "@relational-fabric/canon": ">=1.2.0"
+  },
+  "dependencies": {
+    "@relational-fabric/canon": "1.3.0",
+    "husky": "^9.1.7"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
@@ -51,6 +55,6 @@
     "npm-run-all": "^4.1.5",
     "tsx": "^4.20.6",
     "typescript": "^5.0.0",
-    "vitest": "^2.0.0"
+    "vitest": "^4.0.8"
   }
 }

@@ -18,28 +18,28 @@ The `ClaimInterpretation` object is the heart of the explanation. It provides di
 ### Example: Basic Proof Usage
 
 ```javascript
-import { claims, prove } from 'howard';
+import { claims, prove } from 'howard'
 
 // Assume 'aUser', 'HasCart', and 'IsEmpty' already exist from the Getting Started guide.
-const { aUser, HasCart, IsEmpty } = claims({ /* ... */ });
+const { aUser, HasCart, IsEmpty } = claims({ /* ... */ })
 
 // We define a claim that checks if a user has an empty cart.
-const HasEmptyCart = aUser.and(HasCart).on('cart', IsEmpty);
+const HasEmptyCart = aUser.and(HasCart).on('cart', IsEmpty)
 
 // Let's get a proof for a user with a non-empty cart.
 const myUser = {
-    id: 1,
-    email: 'test@example.com',
-    cart: { items: { 'item-1': 1 } }
-};
+  id: 1,
+  email: 'test@example.com',
+  cart: { items: { 'item-1': 1 } }
+}
 
 // We prove the claim. The result will be false.
-const proof = prove(HasEmptyCart, myUser);
+const proof = prove(HasEmptyCart, myUser)
 
-console.log(proof.result); // false
+console.log(proof.result) // false
 
 // You can now inspect the explanation.
-console.log(proof.explanation.human());
+console.log(proof.explanation.human())
 ```
 
 ## The Problem of Conditioned Claims
@@ -55,30 +55,30 @@ The `prove` function solves this perfectly by treating the proof as a **static, 
 ### Example: Conditioned Claims with Immutable Proofs
 
 ```javascript
-import { claims, prove } from 'howard';
+import { claims, prove } from 'howard'
 
 // Assume 'aUser' and the `appState` object from the getting started guide.
-const { aUser } = claims({ /* ... */ });
-const appState = { currentUser: null };
+const { aUser } = claims({ /* ... */ })
+const appState = { currentUser: null }
 
 // This is a conditioned claim, as its value comes from an external source.
-const LoggedInUser = aUser.given(() => appState.currentUser);
+const LoggedInUser = aUser.given(() => appState.currentUser)
 
 // The claim is false, because the user is not logged in.
-appState.currentUser = null;
-const failedProof = prove(LoggedInUser);
-console.log(failedProof.result); // false
+appState.currentUser = null
+const failedProof = prove(LoggedInUser)
+console.log(failedProof.result) // false
 
 // Now, the user logs in. The app state has changed.
-appState.currentUser = { id: 1, email: 'user@test.com' };
+appState.currentUser = { id: 1, email: 'user@test.com' }
 
 // We prove the claim again, and this time it's true.
-const successProof = prove(LoggedInUser);
-console.log(successProof.result); // true
+const successProof = prove(LoggedInUser)
+console.log(successProof.result) // true
 
 // The original `failedProof` object is an immutable record of the state when it was created.
 // It will always be a reliable record of that moment in time.
-console.log(failedProof.explanation.human());
+console.log(failedProof.explanation.human())
 ```
 
 This approach brings the power of formal logic to your error handling, providing a consistent and robust way to debug and handle errors across your entire application.

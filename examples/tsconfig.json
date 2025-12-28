@@ -2,8 +2,9 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "types": ["node", "vitest/importMeta"],
-    "noEmit": true
+    "noEmit": true,
+    "skipLibCheck": true
   },
-  "include": ["./**/*"]
+  "include": ["./**/*", "../types/**/*.d.ts"],
+  "exclude": ["node_modules"]
 }
-

@@ -1,0 +1,35 @@
+/**
+ * Core public API functions
+ */
+
+import type { ClaimInterface, ClaimsInput, ClaimsResult } from './types/index.js'
+import { Claim } from './Claim.js'
+import { nameForGuard, nameForPredicate } from './naming/index.js'
+
+/**
+ * Transform predicates and type guards into first-class claim objects.
+ *
+ * This is the primary entry point for defining claims in Howard.
+ *
+ * @param input - An object containing predicates and/or guards
+ * @returns An object with Claim instances, keyed by transformed names
+ */
+export function claims<T extends ClaimsInput>(input: T): ClaimsResult<T> {
+  const result: Record<string, ClaimInterface<unknown>> = {}
+
+  if (input.relations) {
+    for (const [name, predicate] of Object.entries(input.relations)) {
+      const claimName = nameForPredicate(name)
+      result[claimName] = new Claim(predicate)
+    }
+  }
+
+  if (input.types) {
+    for (const [name, guard] of Object.entries(input.types)) {
+      const claimName = nameForGuard(name)
+      result[claimName] = new Claim(guard)
+    }
+  }
+
+  return result as ClaimsResult<T>
+}
