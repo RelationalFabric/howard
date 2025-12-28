@@ -2,5 +2,5 @@
  * Condition strategy classes
  */
 
-export { ConditionEager } from './Eager.js'
-export { ConditionLazy } from './Lazy.js'
+export * from './Eager.js'
+export * from './Lazy.js'

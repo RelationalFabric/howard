@@ -16,8 +16,8 @@
  * ```
  */
 
-export { Claim } from './Claim.js'
-export { ClaimAnd, ClaimOn, ClaimOr } from './claim/combinators.js'
-export { Condition } from './Condition.js'
-export { ConditionEager } from './Condition/Eager.js'
-export { ConditionLazy } from './Condition/Lazy.js'
+export * from './Claim.js'
+export * from './Claim/index.js'
+export * from './Condition.js'
+export * from './Condition/Eager.js'
+export * from './Condition/Lazy.js'

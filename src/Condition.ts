@@ -3,8 +3,7 @@
  */
 
 import type { ClaimInterface, ConditionInterface, ReferenceFn } from './types/index.js'
-import { ConditionEager } from './Condition/Eager.js'
-import { ConditionLazy } from './Condition/Lazy.js'
+import { ConditionEager, ConditionLazy } from './Condition/index.js'
 
 /**
  * Condition class implementation.
