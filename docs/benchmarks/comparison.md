@@ -7,18 +7,18 @@ Results are automatically updated when benchmarks are recorded for either branch
 
 | Branch | Last Updated | Status |
 | :--- | :--- | :--- |
-| main | 2025-12-27 | ✅ Available |
-| develop | 2025-12-27 | ✅ Available |
+| main | 2025-12-28 | ✅ Available |
+| develop | 2025-12-28 | ✅ Available |
 
 ## Branch Comparison
 
 | Benchmark | main (ops/sec) | develop (ops/sec) | Δ | Status |
 | :--- | ---: | ---: | ---: | :---: |
-| claim.and (positive & even) | 95.7K | 89.2K | -6.8% | ⚠️ |
-| claim.check negative branch | 226.4K | 167.4K | -26.0% | ⚠️ |
-| claim.check positive number | 180.7K | 154.0K | -14.8% | ⚠️ |
-| claim.on (object.value) | 82.1K | 56.4K | -31.4% | ⚠️ |
-| claim.or (number | string) | 183.2K | 163.1K | -11.0% | ⚠️ |
+| claim.and (positive & even) | 95.7K | 90.4K | -5.5% | ⚠️ |
+| claim.check negative branch | 226.4K | 179.1K | -20.9% | ⚠️ |
+| claim.check positive number | 180.7K | 157.0K | -13.1% | ⚠️ |
+| claim.on (object.value) | 82.1K | 55.1K | -32.9% | ⚠️ |
+| claim.or (number | string) | 183.2K | 170.2K | -7.1% | ⚠️ |
 
 ### Legend
 
@@ -44,11 +44,11 @@ Results are automatically updated when benchmarks are recorded for either branch
 
 | Benchmark | ops/sec | mean (ms) | ±RME | p99 (ms) | samples |
 | :--- | ---: | ---: | ---: | ---: | ---: |
-| claim.check negative branch | 167.4K | 5.9752 | ±0.12% | 11.0610 | 502,357 |
-| claim.or (number | string) | 163.1K | 6.1355 | ±0.15% | 11.4517 | 489,871 |
-| claim.check positive number | 154.0K | 6.4988 | ±0.26% | 10.0117 | 462,088 |
-| claim.and (positive & even) | 89.2K | 11.2095 | ±0.12% | 17.9000 | 267,741 |
-| claim.on (object.value) | 56.4K | 17.8141 | ±0.13% | 31.3853 | 169,768 |
+| claim.check negative branch | 179.1K | 5.5835 | ±0.07% | 8.1213 | 537,301 |
+| claim.or (number | string) | 170.2K | 5.8762 | ±0.09% | 10.9437 | 510,571 |
+| claim.check positive number | 157.0K | 6.3691 | ±0.23% | 9.9553 | 471,029 |
+| claim.and (positive & even) | 90.4K | 11.0606 | ±0.13% | 18.6450 | 271,239 |
+| claim.on (object.value) | 55.1K | 18.1685 | ±0.16% | 33.8700 | 165,396 |
 
 ## How to Update
 
