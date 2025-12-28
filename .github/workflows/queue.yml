@@ -7,6 +7,10 @@ jobs:
   review:
     name: Run Checks
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [22.x]
     # This job runs but immediately succeeds, providing a placeholder status
     # that can be overridden by the PR workflow when it runs
 
