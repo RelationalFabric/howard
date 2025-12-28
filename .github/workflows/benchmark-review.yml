@@ -1,0 +1,131 @@
+name: Benchmark Review
+
+on:
+  workflow_run:
+    workflows: [Benchmarks]
+    types:
+      - completed
+    branches:
+      - bench/main
+      - bench/develop
+
+jobs:
+  review:
+    name: Run Checks
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+
+    strategy:
+      matrix:
+        node-version: [22.x]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Find PR for bench branch
+        id: pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Extract branch name from workflow_run event
+          # The branch will be bench/main or bench/develop
+          BENCH_BRANCH="${{ github.event.workflow_run.head_branch }}"
+
+          if [ -z "$BENCH_BRANCH" ]; then
+            echo "⚠️ Could not determine bench branch from workflow_run event"
+            echo "pr_number=" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Find PR from bench branch to develop
+          PR_NUMBER=$(gh pr list --head "$BENCH_BRANCH" --base develop --json number --jq '.[0].number' 2>/dev/null || echo "")
+
+          if [ -z "$PR_NUMBER" ] || [ "$PR_NUMBER" == "null" ]; then
+            echo "⚠️ No PR found for branch $BENCH_BRANCH"
+            echo "pr_number=" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
+          echo "✅ Found PR #$PR_NUMBER for branch $BENCH_BRANCH"
+
+      - name: Validate changed files
+        if: steps.pr.outputs.pr_number != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_NUMBER="${{ steps.pr.outputs.pr_number }}"
+          BENCH_BRANCH="${{ github.event.workflow_run.head_branch }}"
+
+          # Fetch the PR branch
+          git fetch origin "$BENCH_BRANCH"
+
+          # Get list of changed files between develop and the PR branch
+          CHANGED_FILES=$(git diff --name-only origin/develop...origin/"$BENCH_BRANCH" || echo "")
+
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "⚠️ No files changed in PR #$PR_NUMBER"
+            exit 0
+          fi
+
+          echo "Changed files in PR #$PR_NUMBER:"
+          echo "$CHANGED_FILES"
+
+          # Expected paths that are allowed to change
+          # These should match what the benchmarks workflow modifies
+          ALLOWED_PATTERNS=(
+            "benchmarks/results/"
+            "docs/benchmarks/comparison.md"
+          )
+
+          # Check each changed file
+          UNEXPECTED_FILES=()
+          while IFS= read -r file; do
+            if [ -z "$file" ]; then
+              continue
+            fi
+            
+            ALLOWED=false
+            for pattern in "${ALLOWED_PATTERNS[@]}"; do
+              if [[ "$file" == "$pattern"* ]] || [[ "$file" == "$pattern" ]]; then
+                ALLOWED=true
+                break
+              fi
+            done
+            
+            if [ "$ALLOWED" = false ]; then
+              UNEXPECTED_FILES+=("$file")
+            fi
+          done <<< "$CHANGED_FILES"
+
+          # Fail if unexpected files were changed
+          if [ ${#UNEXPECTED_FILES[@]} -gt 0 ]; then
+            echo "❌ ERROR: Unexpected files changed in PR #$PR_NUMBER:"
+            printf '  - %s\n' "${UNEXPECTED_FILES[@]}"
+            echo ""
+            echo "Only the following paths are allowed to change:"
+            printf '  - %s\n' "${ALLOWED_PATTERNS[@]}"
+            echo ""
+            echo "This PR may have been manually modified or the benchmarks workflow"
+            echo "may have changed unexpected files. Please review the changes."
+            exit 1
+          fi
+
+          echo "✅ All changed files are within expected paths"
+
+      - name: Review summary
+        if: always() && steps.pr.outputs.pr_number != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_NUMBER="${{ steps.pr.outputs.pr_number }}"
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ PR #$PR_NUMBER passed validation - only expected paths were changed"
+          else
+            echo "❌ PR #$PR_NUMBER failed validation - unexpected paths were changed"
+          fi
